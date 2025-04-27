@@ -1,38 +1,63 @@
-.App {
-  text-align: center;
+/*---------------------------------------------------
+  COLORS & TYPOGRAPHY
+---------------------------------------------------*/
+:root {
+  --primary: #4f46e5;
+  --primary-light: #eef2ff;
+  --secondary: #6b7280;
+  --bg: #eef2ff;            /* light purple throughout */
+  --card-bg: #fff;
+  --text-dark: #111827;
+  --radius: 8px;
+  --shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+  margin: 0; padding: 0; box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text-dark);
+  line-height: 1.6;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+a { text-decoration: none; color: inherit; }
+
+
+
+/*---------------------------------------------------
+  BUTTONS
+---------------------------------------------------*/
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
 }
 
-.App-link {
-  color: #61dafb;
+.btn-primary:hover {
+  background: #4338ca;
+  transform: translateY(-2px);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn-secondary {
+  background: #fff;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 0.7rem 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
 }

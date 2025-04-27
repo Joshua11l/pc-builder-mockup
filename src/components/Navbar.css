@@ -1,0 +1,86 @@
+
+  /*---------------------------------------------------
+  NAVBAR
+---------------------------------------------------*/
+.navbar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    z-index: 100;
+  }
+  
+  .navbar-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .navbar-link {
+    position: relative;
+    padding: 0.5rem;
+    font-weight: 500;
+    color: var(--secondary);
+    transition: color 0.2s;
+  }
+  
+  .navbar-link:hover,
+  .navbar-link.active {
+    color: var(--text-dark);
+  }
+  
+  .navbar-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: width 0.3s;
+  }
+  
+  .navbar-link:hover::after,
+  .navbar-link.active::after {
+    width: 100%;
+  }
+  
+  
+  .navbar-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .navbar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: var(--secondary);
+    transition: color 0.2s;
+  }
+  
+  .navbar-link:hover,
+  .navbar-link.active {
+    color: var(--text-dark);
+  }
+  
+  .nav-icon {
+    font-size: 1.1rem;
+  }
+  

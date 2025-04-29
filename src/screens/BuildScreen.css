@@ -1,7 +1,10 @@
+/* BUILD SCREEN CONTAINER */
 .build-screen {
+    background: #e2e8f0;        /* same as HomeScreen */
+    color: #1e293b;             /* logo navy for body text */
     max-width: 1000px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 2rem 1rem;         /* added some vertical padding */
     text-align: center;
   }
   

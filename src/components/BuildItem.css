@@ -1,0 +1,54 @@
+.build-item-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1rem;
+    position: relative;
+    transition: transform 0.2s;
+  }
+  .build-item-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  /* header */
+  .part-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+  }
+  
+  /* image */
+  .part-image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    margin-bottom: 0.75rem;
+  }
+  
+  /* name */
+  .part-name {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* footer */
+  .part-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .part-price {
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .part-link {
+    color: var(--secondary);
+    font-size: 1.2rem;
+    transition: color 0.2s;
+  }
+  .part-link:hover {
+    color: var(--primary);
+  }
+  

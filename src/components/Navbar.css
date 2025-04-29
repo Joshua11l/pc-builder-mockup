@@ -1,86 +1,72 @@
-
-  /*---------------------------------------------------
-  NAVBAR
----------------------------------------------------*/
+/* NAVBAR STYLING */
 .navbar {
-    position: sticky;
-    top: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #fff;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    z-index: 100;
-  }
-  
-  .navbar-logo {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--primary);
-  }
-  
-  .navbar-links {
-    display: flex;
-    gap: 1.5rem;
-  }
-  
-  .navbar-link {
-    position: relative;
-    padding: 0.5rem;
-    font-weight: 500;
-    color: var(--secondary);
-    transition: color 0.2s;
-  }
-  
-  .navbar-link:hover,
-  .navbar-link.active {
-    color: var(--text-dark);
-  }
-  
-  .navbar-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--primary);
-    transition: width 0.3s;
-  }
-  
-  .navbar-link:hover::after,
-  .navbar-link.active::after {
-    width: 100%;
-  }
-  
-  
-  .navbar-logo {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--primary);
-  }
-  
-  .navbar-links {
-    display: flex;
-    gap: 1.5rem;
-  }
-  
-  .navbar-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
-    color: var(--secondary);
-    transition: color 0.2s;
-  }
-  
-  .navbar-link:hover,
-  .navbar-link.active {
-    color: var(--text-dark);
-  }
-  
-  .nav-icon {
-    font-size: 1.1rem;
-  }
-  
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b; /* logo navy */
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navbar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #64748b; /* muted gray */
+  text-decoration: none;
+  padding: 0.5rem;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.navbar-link:hover,
+.navbar-link.active {
+  color: #1e293b; /* primary */
+}
+
+.navbar-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background-color: #1e293b;
+  transition: width 0.3s ease;
+}
+
+.navbar-link:hover::after,
+.navbar-link.active::after {
+  width: 100%;
+}
+
+.nav-icon {
+  font-size: 1.1rem;
+}

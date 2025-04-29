@@ -2,13 +2,17 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaHome, FaTools, FaSave } from 'react-icons/fa';
 import './Navbar.css';
+import logo from '../assets/pc-logo.png';
 
 export default function Navbar() {
   return (
     <nav className="navbar">
-      <div className="navbar-logo">PC Build Gen</div>
+      <div className="navbar-logo">
+        <img src={logo} alt="PC Builder Logo" className="logo-img" />
+        <span className="logo-text">PC Build Generator</span>
+      </div>
       <div className="navbar-links">
-        <NavLink to="/"      className="navbar-link">
+        <NavLink to="/" exact="true" className="navbar-link">
           <FaHome className="nav-icon" /> Get Started
         </NavLink>
         <NavLink to="/build" className="navbar-link">

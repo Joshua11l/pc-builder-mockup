@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { FaSpinner } from 'react-icons/fa';
+import './BudgetInput.css';
 
-export default function BudgetInput({ onSubmit }) {
+export default function BudgetInput({ onSubmit, loading }) {
   const [budget, setBudget] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
-    if (!budget) return;
+    if (!budget || loading) return;
     onSubmit(budget);
   };
 
@@ -16,9 +18,18 @@ export default function BudgetInput({ onSubmit }) {
         className="budget-input"
         placeholder="Enter your budget ($)"
         value={budget}
-        onChange={(e) => setBudget(e.target.value)}
+        onChange={e => setBudget(e.target.value)}
       />
-      <button type="submit">Generate</button>
+      <button
+        type="submit"
+        className="btn-generate"
+        disabled={loading}
+      >
+        {loading
+          ? <FaSpinner className="btn-spinner" />
+          : 'Generate'
+        }
+      </button>
     </form>
   );
 }

@@ -14,16 +14,10 @@ export default function HomeScreen() {
             Generate optimized PC builds tailored to your budget and performance goals.
           </p>
           <div className="hero-actions">
-            <button
-              className="btn-primary"
-              onClick={() => nav('/build')}
-            >
+            <button className="btn-primary" onClick={() => nav('/build')}>
               Start Building
             </button>
-            <button
-              className="btn-secondary"
-              onClick={() => nav('/saved')}
-            >
+            <button className="btn-secondary" onClick={() => nav('/saved')}>
               View Saved Builds
             </button>
           </div>

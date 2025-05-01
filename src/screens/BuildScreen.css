@@ -1,10 +1,11 @@
+/* BuildScreen.css */
+
 /* BUILD SCREEN CONTAINER */
 .build-screen {
-    background: #e2e8f0;        /* same as HomeScreen */
-    color: #1e293b;             /* logo navy for body text */
+    color: #1e293b;
     max-width: 1000px;
     margin: 0 auto;
-    padding: 2rem 1rem;         /* added some vertical padding */
+    padding: 2rem 1rem;
     text-align: center;
   }
   
@@ -33,7 +34,7 @@
     position: relative;
     width: 100%;
     height: 600px;
-    margin: 3rem 0;
+    margin-bottom: 3rem;
     overflow: visible;
   }
   
@@ -108,61 +109,24 @@
     color: #1e293b;
   }
   
-  /* RADIAL METER */
+  /* HALF-CIRCLE METER */
   .meter-wrapper {
     display: flex;
     justify-content: center;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 100;
   }
   
-  .radial-meter {
-    --pct: 0;
-    position: relative;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background: #f8fafc;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  .half-circle-meter {
+    width: 350px;
+    height: 200px; /* half of full circle */
     overflow: hidden;
   }
   
-  .meter-fill {
-    position: absolute;
-    inset: 0;
-    background: conic-gradient(
-      #1e293b 0deg,
-      #1e293b calc(var(--pct) * 3.6deg),
-      #f8fafc 0
-    );
-    transition: background 1s ease-out;
-  }
-  
   .meter-text {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-weight: 700;
-  }
-  
-  /* SUGGESTIONS */
-  .suggestions {
-    max-width: 500px;
-    margin: 0 auto 3rem;
-    text-align: left;
-  }
-  
-  .suggestions h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .suggestions ul {
-    list-style: disc inside;
-  }
-  
-  .suggestions li {
-    margin-bottom: 0.5rem;
+    font-size: x-large;
+    margin-bottom: 6rem;
   }
   

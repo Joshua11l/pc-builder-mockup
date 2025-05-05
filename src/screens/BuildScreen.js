@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
 import 'tippy.js/dist/tippy.css'
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import BudgetInput from '../components/BudgetInput'
 import pcPlaceholder from '../assets/pc-placeholder.avif'
 import Ryzen5 from '../assets/ryzen5.jpeg'
@@ -24,7 +27,6 @@ const POSITIONS = Object.fromEntries(
     return [k, { x: `${50 + DIST * Math.cos(r)}%`, y: `${50 + DIST * Math.sin(r)}%` }]
   })
 )
-
 const TOOLTIP = {
   CPU: 'Central processing unit handles main calculations',
   GPU: 'Graphics processing unit renders images and video',
@@ -33,7 +35,6 @@ const TOOLTIP = {
   PSU: 'Power supply unit provides stable power',
   OTHER: 'Additional component'
 }
-
 const THUMB_IMAGES = {
   CPU: Ryzen5,
   GPU: RTXImg,
@@ -47,19 +48,18 @@ export default function BuildScreen() {
   const [isLoading, setIsLoading] = useState(false)
   const [optimal, setOptimal] = useState(0)
   const [animated, setAnimated] = useState(0)
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (!items.length) return
     setAnimated(0)
-    const duration = 800
-    const frameRate = 15
-    const totalFrames = duration / frameRate
+    const duration = 800, frameRate = 15, total = duration / frameRate
     let frame = 0
-    const inc = optimal / totalFrames
+    const inc = optimal / total
     const iv = setInterval(() => {
       frame++
       setAnimated(Math.min(optimal, Math.round(inc * frame)))
-      if (frame >= totalFrames) clearInterval(iv)
+      if (frame >= total) clearInterval(iv)
     }, frameRate)
     return () => clearInterval(iv)
   }, [optimal, items])
@@ -68,6 +68,7 @@ export default function BuildScreen() {
     setIsLoading(true)
     setItems([])
     setOptimal(0)
+    setSaved(false)
     setTimeout(() => {
       const demo = [
         { id: '1', category: 'CPU', name: 'Ryzen 5 5600X',     price: 199, link: 'https://www.amazon.com/AMD-Ryzen-5600X-12-Thread-Processor/dp/B08166SLDF' },
@@ -82,8 +83,21 @@ export default function BuildScreen() {
     }, 1200)
   }
 
+  function handleSave() {
+    const builds = JSON.parse(localStorage.getItem('savedBuilds') || '[]')
+    builds.push({ items, optimal, timestamp: Date.now() })
+    localStorage.setItem('savedBuilds', JSON.stringify(builds))
+    setSaved(true)
+    toast.success('Build successfully saved!', { position: 'top-right', autoClose: 2500 })
+  }
+
+  const Heart = saved
+    ? <AiFillHeart className="heart-icon filled" />
+    : <AiOutlineHeart className="heart-icon" onClick={handleSave} />
+
   return (
     <div className="build-screen">
+      <ToastContainer />
       {items.length === 0 ? (
         <div className="build-hero">
           <h2 className="build-title">Create a Build</h2>
@@ -94,7 +108,12 @@ export default function BuildScreen() {
         </div>
       ) : (
         <div className="build-hero">
-          <h2 className="build-title">Build Successfully Created</h2>
+          <div className="header-row">
+            <h2 className="build-title">Build Successfully Created</h2>
+            <div className="save-heart" title="Save this build">
+              {Heart}
+            </div>
+          </div>
           <p className="build-subtitle created-subheader">
             Here’s your optimized setup based on the budget you entered. Click any part to explore or purchase.
           </p>
@@ -136,15 +155,11 @@ export default function BuildScreen() {
               )
             })}
           </svg>
-
           <img src={pcPlaceholder} alt="PC Case" className="pc-case" />
-
           {items.map(i => {
             const { x, y } = POSITIONS[i.category] || POSITIONS.OTHER
-            const desc = TOOLTIP[i.category] || TOOLTIP.OTHER
-            const thumb = THUMB_IMAGES[i.category] || THUMB_IMAGES.OTHER
             return (
-              <Tippy key={i.id} content={desc} delay={100}>
+              <Tippy key={i.id} content={TOOLTIP[i.category] || TOOLTIP.OTHER} delay={100}>
                 <a
                   href={i.link}
                   target="_blank"
@@ -152,7 +167,7 @@ export default function BuildScreen() {
                   className="part-card"
                   style={{ top: y, left: x }}
                 >
-                  <img src={thumb} alt={i.name} className="part-thumb" />
+                  <img src={THUMB_IMAGES[i.category] || THUMB_IMAGES.OTHER} alt={i.name} className="part-thumb" />
                   <div className="part-details">
                     <div className="part-name">{i.name}</div>
                     <div className="part-price">${i.price}</div>

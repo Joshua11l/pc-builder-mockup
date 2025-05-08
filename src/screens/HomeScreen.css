@@ -1,7 +1,36 @@
+/* HomeScreen.css */
+
+:root {
+  /* Brighter dark greys */
+  --bg:       #1a1a21;   /* main page bg */
+  --card-bg:  #262630;   /* cards, containers */
+  /* Lighter text */
+  --text-main: #ededf2;
+  --text-sub:  #b3b3c2;
+  /* Stronger neon */
+  --accent:    #00ffe7;
+  --border-muted: #42424c;
+  --radius:    12px;
+}
+
+/* reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
 /* HERO SECTION */
 .hero-section {
-  background: #e2e8f0;
-  color: #1e293b;
+  background: var(--bg);
+  color: var(--text-main);
   padding: 6rem 1rem;
   text-align: center;
 }
@@ -15,15 +44,15 @@
   font-size: 2.75rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #1e293b;
 }
 
 .hero-subtitle {
   font-size: 1.125rem;
   margin-bottom: 2.5rem;
-  color: #64748b;
+  color: var(--text-sub);
 }
 
+/* BUTTONS */
 .hero-actions {
   display: flex;
   justify-content: center;
@@ -35,38 +64,35 @@
   padding: 0.75rem 1.5rem;
   font-weight: 600;
   font-size: 1rem;
-  border-radius: 6px;
+  border-radius: var(--radius);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-/* Primary: filled soft navy */
 .btn-primary {
-  background-color: #1e293b;
-  color: white;
+  background-color: var(--accent);
+  color: var(--bg);
   border: none;
 }
-
 .btn-primary:hover {
-  background-color: #334155;
+  transform: translateY(-2px);
 }
 
-/* Secondary: outline navy */
 .btn-secondary {
   background-color: transparent;
-  color: #1e293b;
-  border: 2px solid #1e293b;
+  color: var(--accent);
+  border: 2px solid var(--accent);
 }
-
 .btn-secondary:hover {
-  background-color: #1e293b;
-  color: white;
+  background-color: var(--accent);
+  color: var(--bg);
+  transform: translateY(-2px);
 }
 
 /* GET STARTED SECTION */
 .get-started-section {
-  background: #e2e8f0;
-  color: #1e293b;
+  background: var(--bg);
+  color: var(--text-main);
   padding: 4rem 1rem;
   text-align: center;
 }
@@ -80,15 +106,15 @@
   font-size: 2rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
-  color: #1e293b;
 }
 
 .section-subtitle {
-  color: #64748b;
+  color: var(--text-sub);
   margin-bottom: 2rem;
   font-size: 1rem;
 }
 
+/* STEPS GRID */
 .steps-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -97,9 +123,9 @@
 }
 
 .step-card {
-  background: #f8fafc;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: var(--card-bg);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius);
   padding: 2rem 1.5rem;
   text-align: center;
   transition: transform 0.2s;
@@ -112,8 +138,8 @@
 .step-number {
   width: 48px;
   height: 48px;
-  background: #1e293b;
-  color: #fff;
+  background: var(--accent);
+  color: var(--bg);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -130,12 +156,12 @@
 }
 
 .step-desc {
-  color: #64748b;
+  color: var(--text-sub);
   font-size: 1rem;
 }
 
 /* Nav link active indicator */
 .nav-link.active {
-  color: #1e293b;
-  border-bottom: 2px solid #1e293b;
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
 }

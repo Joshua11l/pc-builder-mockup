@@ -17,6 +17,9 @@ import {
   buildStyles
 } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
+
+// import HomeScreen theme variables and button rules
+import './HomeScreen.css'
 import './BuildScreen.css'
 
 const DIST = 45
@@ -44,11 +47,12 @@ const THUMB_IMAGES = {
 }
 
 export default function BuildScreen() {
-  const [items, setItems] = useState([])
+  const [items, setItems]     = useState([])
+  const [budget, setBudget]   = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [optimal, setOptimal] = useState(0)
   const [animated, setAnimated] = useState(0)
-  const [saved, setSaved] = useState(false)
+  const [saved, setSaved]     = useState(false)
 
   useEffect(() => {
     if (!items.length) return
@@ -64,11 +68,13 @@ export default function BuildScreen() {
     return () => clearInterval(iv)
   }, [optimal, items])
 
-  function handleGenerate(budget) {
+  function handleGenerate(budgetInput) {
     setIsLoading(true)
     setItems([])
     setOptimal(0)
     setSaved(false)
+    setBudget(budgetInput)
+
     setTimeout(() => {
       const demo = [
         { id: '1', category: 'CPU', name: 'Ryzen 5 5600X',     price: 199, link: 'https://www.amazon.com/AMD-Ryzen-5600X-12-Thread-Processor/dp/B08166SLDF' },
@@ -91,6 +97,7 @@ export default function BuildScreen() {
     toast.success('Build successfully saved!', { position: 'top-right', autoClose: 2500 })
   }
 
+  const totalPrice = items.reduce((sum, i) => sum + i.price, 0)
   const Heart = saved
     ? <AiFillHeart className="heart-icon filled" />
     : <AiOutlineHeart className="heart-icon" onClick={handleSave} />
@@ -114,9 +121,15 @@ export default function BuildScreen() {
               {Heart}
             </div>
           </div>
+
           <p className="build-subtitle created-subheader">
             Here’s your optimized setup based on the budget you entered. Click any part to explore or purchase.
           </p>
+
+          <div className="budget-summary">
+            Total Price: ${totalPrice} / Budget: ${budget}
+          </div>
+
           <div className="meter-wrapper enhanced-meter">
             <div className="half-circle-meter">
               <CircularProgressbarWithChildren

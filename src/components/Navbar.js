@@ -13,10 +13,10 @@ export default function Navbar() {
       </div>
       <div className="navbar-links">
         <NavLink to="/" exact="true" className="navbar-link">
-          <FaHome className="nav-icon" /> Get Started
+          <FaHome className="nav-icon" /> Home
         </NavLink>
         <NavLink to="/build" className="navbar-link">
-          <FaTools className="nav-icon" /> Build
+          <FaTools className="nav-icon" /> Get Started
         </NavLink>
         <NavLink to="/saved" className="navbar-link">
           <FaSave className="nav-icon" /> Saved Builds

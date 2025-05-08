@@ -1,6 +1,6 @@
 /* src/screens/BuildScreen.css */
 .build-screen {
-  color: #1e293b;
+  color: #ededf2;
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 1rem;
@@ -19,13 +19,40 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  color: #1e293b;
+  color: #ededf2 !important;
 }
 
 .build-subtitle {
-  color: #64748b;
+  color: #b3b3c2;
   margin-bottom: 1rem;
   font-size: 1rem;
+}
+
+/* BudgetInput’s Generate button now matches theme */
+/* BudgetInput’s Generate button now matches theme */
+.build-hero button {
+  font-weight: 600;
+  font-size: 1rem;
+  background-color: transparent !important;
+  color: var(--accent)  !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--bg);
+  border-color: var(--accent) !important;
+  border: solid 1px;
+}
+
+.build-hero button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.build-hero button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background-color: var(--accent)  !important;
+  color: var(--bg)  !important;
+
+
 }
 
 /* Header row and save heart */
@@ -36,13 +63,14 @@
   gap: 1rem;
 }
 
+/* ...rest of your existing BuildScreen.css... */
 .save-heart {
   cursor: pointer;
 }
 
 .heart-icon {
   font-size: 2rem;
-  color: #94a3b8;
+  color: #b3b3c2;
   transition: color 0.2s;
 }
 
@@ -54,16 +82,21 @@
   color: #ef4444;
 }
 
-/* Created Subheader */
 .created-subheader {
   font-size: 1.125rem;
-  color: #475569;
+  color: #b3b3c2;
   max-width: 700px;
   margin: 0 auto 2.5rem;
   line-height: 1.6;
 }
 
-/* METER */
+.budget-summary {
+  font-size: large !important;
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
 .meter-wrapper {
   display: flex;
   justify-content: center;
@@ -72,10 +105,10 @@
 }
 
 .meter-wrapper.enhanced-meter {
-  background: linear-gradient(to top, #f8fafc, #ffffff);
+  background: #262630;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 .half-circle-meter {
@@ -87,13 +120,13 @@
 .meter-percentage {
   font-size: 1.7rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #ededf2;
   margin-bottom: 0.25rem;
 }
 
 .meter-label {
   font-size: 0.95rem;
-  color: #64748b;
+  color: #b3b3c2;
   font-weight: 600;
   margin-bottom: 5rem;
 }
@@ -132,10 +165,10 @@
   transform: translate(-50%, -50%);
   width: 250px;
   padding: 0.75rem;
-  background: #ffffff;
-  border: 1px solid #d6d6d6;
+  background: #262630;
+  border: 1px solid #42424c;
   border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -146,7 +179,7 @@
 
 .part-card:hover {
   transform: translate(-50%, -50%) scale(1.05);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 .part-thumb {
@@ -164,13 +197,13 @@
 .part-name {
   font-size: large;
   font-weight: 800 !important;
-  color: #111827;
+  color: #ededf2;
   line-height: 1.2;
 }
 
 .part-price {
   font-size: 1rem;
-  color: #4b5563 !important;
+  color: #b3b3c2 !important;
   font-weight: 600 !important;
   margin-top: 0.25rem;
 }

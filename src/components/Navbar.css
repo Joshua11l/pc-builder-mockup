@@ -1,73 +1,75 @@
-/* NAVBAR – dark neon tech style */
+/* src/components/Navbar.css */
+
+:root {
+  --bg: #1a1a21;
+  --card-bg: #262630;
+  --text-main: #ededf2;
+  --text-sub: #b3b3c2;
+  --accent: #00ffe7;
+  --border-muted: #42424c;
+  --radius: 8px;
+}
+
 .navbar {
   position: sticky;
   top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--card-bg);       /* dark card bg */
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: var(--card-bg);
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 0 6px #a259ff;
   z-index: 100;
-  border-bottom: 1px solid var(--border-muted);
 }
 
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  padding-right: 1rem;
+  border-right: 1px solid var(--border-muted);
 }
 
 .logo-img {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 
 .logo-text {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: var(--text-main);          /* bright text */
+  color: var(--text-main);
 }
 
 .navbar-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .navbar-link {
   position: relative;
-  padding: 0.5rem;
+  padding: 0.5rem 0.75rem;
   font-weight: 500;
-  color: var(--text-sub);           /* muted text */
+  color: var(--text-sub);
   text-decoration: none;
-  transition: color 0.2s ease;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-icon {
+  margin-right: 0.25rem;
+  color: var(--text-sub);
+  vertical-align: middle;
 }
 
 .navbar-link:hover,
 .navbar-link.active {
-  color: var(--accent);            /* neon accent */
-}
-
-.navbar-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  width: 0%;
-  background-color: var(--accent);
-  transition: width 0.3s ease;
-}
-
-.navbar-link:hover::after,
-.navbar-link.active::after {
-  width: 100%;
-}
-
-.nav-icon {
-  font-size: 1.1rem;
-  color: var(--text-sub);
+  color: var(--accent);
+  background: rgba(0, 255, 231, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(0, 255, 231, 0.6);
 }
 
 .navbar-link:hover .nav-icon,

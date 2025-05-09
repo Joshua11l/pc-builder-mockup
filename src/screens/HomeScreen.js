@@ -1,15 +1,26 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './HomeScreen.css';
+// src/screens/HomeScreen.jsx
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import pcVideo from '../assets/pc.mp4'
+import './HomeScreen.css'
 
 export default function HomeScreen() {
-  const nav = useNavigate();
+  const nav = useNavigate()
 
   return (
     <>
       <section className="hero-section">
+        <video
+          src={pcVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="hero-bg-video"
+        />
+        <div className="hero-overlay" />
         <div className="hero-container">
-          <h1 className="hero-title">Build Your Perfect PC</h1>
+          <h1 className="hero-title">BUILD YOUR PERFECT PC</h1>
           <p className="hero-subtitle">
             Generate optimized PC builds tailored to your budget and performance goals.
           </p>
@@ -56,5 +67,5 @@ export default function HomeScreen() {
         </div>
       </section>
     </>
-  );
+  )
 }

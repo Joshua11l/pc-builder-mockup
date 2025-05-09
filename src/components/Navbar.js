@@ -1,8 +1,9 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { FaHome, FaTools, FaSave } from 'react-icons/fa';
-import './Navbar.css';
-import logo from '../assets/pc-logo.png';
+// src/components/Navbar.jsx
+import React from 'react'
+import { NavLink } from 'react-router-dom'
+import { FaHome, FaTools, FaSave } from 'react-icons/fa'
+import './Navbar.css'
+import logo from '../assets/pc-logo.png'
 
 export default function Navbar() {
   return (
@@ -12,7 +13,7 @@ export default function Navbar() {
         <span className="logo-text">PC Build Generator</span>
       </div>
       <div className="navbar-links">
-        <NavLink to="/" exact="true" className="navbar-link">
+        <NavLink to="/" end className="navbar-link">
           <FaHome className="nav-icon" /> Home
         </NavLink>
         <NavLink to="/build" className="navbar-link">
@@ -23,5 +24,5 @@ export default function Navbar() {
         </NavLink>
       </div>
     </nav>
-  );
+  )
 }

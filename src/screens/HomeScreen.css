@@ -1,19 +1,15 @@
-/* HomeScreen.css */
+/* src/screens/HomeScreen.css */
 
 :root {
-  /* Brighter dark greys */
-  --bg:       #1a1a21;   /* main page bg */
-  --card-bg:  #262630;   /* cards, containers */
-  /* Lighter text */
+  --bg: #131314;
+  --card-bg: #131314;
   --text-main: #ededf2;
-  --text-sub:  #b3b3c2;
-  /* Stronger neon */
-  --accent:    #00ffe7;
+  --text-sub: #b3b3c2;
+  --accent: #a259ff;
   --border-muted: #42424c;
-  --radius:    12px;
+  --radius: 12px;
 }
 
-/* reset */
 * {
   margin: 0;
   padding: 0;
@@ -27,29 +23,59 @@ body {
   line-height: 1.6;
 }
 
-/* HERO SECTION */
+/* HERO */
 .hero-section {
-  background: var(--bg);
-  color: var(--text-main);
-  padding: 6rem 1rem;
+  position: relative;
+  overflow: hidden;
+  height: 80vh;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
+.hero-bg-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.60);
+  z-index: 1;
+}
+
 .hero-container {
-  max-width: 600px;
-  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
 }
 
 .hero-title {
-  font-size: 2.75rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: .5rem;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
 }
 
 .hero-subtitle {
-  font-size: 1.125rem;
+  font-size: 1.2rem;
   margin-bottom: 2.5rem;
   color: var(--text-sub);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
 /* BUTTONS */
@@ -66,33 +92,40 @@ body {
   font-size: 1rem;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary {
-  background-color: var(--accent);
+  background: var(--accent);
   color: var(--bg);
   border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
+
 .btn-primary:hover {
   transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  background-color: #6437a0; 
+  color: white;
 }
 
 .btn-secondary {
-  background-color: transparent;
+  background: transparent;
   color: var(--accent);
   border: 2px solid var(--accent);
-}
-.btn-secondary:hover {
-  background-color: var(--accent);
-  color: var(--bg);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* GET STARTED SECTION */
+.btn-secondary:hover {
+  background: var(--accent);
+  color: var(--bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* GET STARTED */
 .get-started-section {
   background: var(--bg);
-  color: var(--text-main);
   padding: 4rem 1rem;
   text-align: center;
 }
@@ -103,7 +136,7 @@ body {
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
 }
@@ -111,7 +144,7 @@ body {
 .section-subtitle {
   color: var(--text-sub);
   margin-bottom: 2rem;
-  font-size: 1rem;
+  font-size: large;
 }
 
 /* STEPS GRID */
@@ -158,10 +191,4 @@ body {
 .step-desc {
   color: var(--text-sub);
   font-size: 1rem;
-}
-
-/* Nav link active indicator */
-.nav-link.active {
-  color: var(--accent);
-  border-bottom: 2px solid var(--accent);
 }

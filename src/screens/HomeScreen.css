@@ -74,7 +74,7 @@ body {
 .hero-subtitle {
   font-size: 1.2rem;
   margin-bottom: 2.5rem;
-  color: var(--text-sub);
+  color: white;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
@@ -136,13 +136,13 @@ body {
 }
 
 .section-title {
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: 3rem;
+  font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
 .section-subtitle {
-  color: var(--text-sub);
+  color: rgb(240, 240, 240);
   margin-bottom: 2rem;
   font-size: large;
 }
@@ -189,6 +189,6 @@ body {
 }
 
 .step-desc {
-  color: var(--text-sub);
+  color: rgb(240, 240, 240);
   font-size: 1rem;
 }

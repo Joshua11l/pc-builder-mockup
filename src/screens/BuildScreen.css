@@ -180,11 +180,14 @@
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--accent);
+  margin-top: 2rem;
 }
 .meter-label {
   font-size: 0.8rem;
   color: var(--text-sub);
   font-weight: 600;
+  margin-top: .2rem;
+
 }
 
 /* Part Cards */

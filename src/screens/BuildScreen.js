@@ -201,7 +201,7 @@ export default function BuildScreen() {
                 circleRatio={0.5}
               >
                 <div className="meter-percentage">{animated}%</div>
-                <div className="meter-label">Performance</div>
+                <div className="meter-label">Optimal Performance</div>
               </CircularProgressbarWithChildren>
             </div>
 

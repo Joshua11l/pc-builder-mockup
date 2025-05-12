@@ -1,6 +1,5 @@
-// src/screens/SavedBuildsScreen.jsx
 import React, { useState, useEffect } from 'react'
-import { FaTrashAlt } from 'react-icons/fa'
+import { FaTrashAlt, FaEdit } from 'react-icons/fa'
 import Ryzen5  from '../assets/ryzen5.jpeg'
 import RTXImg  from '../assets/RTX.jpg'
 import RamImg  from '../assets/Ram.webp'
@@ -83,6 +82,13 @@ export default function SavedBuildsScreen() {
                 </div>
 
                 <div className="card-actions">
+                  <FaEdit
+                    className="edit-icon"
+                    title="Edit build"
+                    onClick={() => {
+                      /* placeholder for edit action */
+                    }}
+                  />
                   <FaTrashAlt
                     className="trash-icon"
                     title="Delete build"
@@ -95,5 +101,5 @@ export default function SavedBuildsScreen() {
         </div>
       )}
     </div>
-)
+  )
 }

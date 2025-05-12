@@ -194,7 +194,7 @@
 .part-card {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 220px;
+  width: 280px;
   padding: 0.8rem;
   background: var(--card-bg);
   border: 1px solid var(--accent);

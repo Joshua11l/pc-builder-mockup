@@ -76,3 +76,25 @@
 .navbar-link.active .nav-icon {
   color: var(--accent);
 }
+
+
+
+.join-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.join-button .nav-icon {
+  margin-right: 0.25rem;
+  color: var(--bg);
+}
+
+.join-button:hover {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 8px rgba(0, 255, 231, 0.6);
+}

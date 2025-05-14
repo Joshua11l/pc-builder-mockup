@@ -1,0 +1,91 @@
+/* src/screens/Auth.css */
+
+* {
+  box-sizing: border-box;
+}
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #131314;
+  padding: 1rem;
+}
+
+.auth-card {
+  background: #1e1e26;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 16px #a259ff;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.auth-card h2 {
+  color: #ffffff;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-card label {
+  color: #b3b3c2;
+  margin-top: 0.75rem;
+  text-align: left;
+}
+
+.auth-card input {
+  padding: 0.75rem 1rem;
+  margin-top: 0.25rem;
+  border: 1px solid #42424c;
+  border-radius: 12px;
+  background: transparent;
+  color: #ededf2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: #a259ff;
+  box-shadow: 0 0 8px #a259ff;
+}
+
+.btn.auth-btn {
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  background: #a259ff;
+  color: #131314;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px #a259ff;
+}
+
+.toggle-text {
+  margin-top: 1rem;
+  color: #b3b3c2;
+  font-size: 0.9rem;
+}
+
+.toggle-text span {
+  color: #a259ff;
+  margin-left: 0.25rem;
+  cursor: pointer;
+  text-shadow: 0 0 6px #a259ff;
+}
+
+.toggle-text span:hover {
+  text-decoration: underline;
+}

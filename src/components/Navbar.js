@@ -1,7 +1,6 @@
-// src/components/Navbar.jsx
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { FaHome, FaTools, FaSave } from 'react-icons/fa'
+import { FaHome, FaTools, FaSave, FaUserPlus } from 'react-icons/fa'
 import './Navbar.css'
 import logo from '../assets/pc-logo.png'
 
@@ -21,6 +20,9 @@ export default function Navbar() {
         </NavLink>
         <NavLink to="/saved" className="navbar-link">
           <FaSave className="nav-icon" /> Saved Builds
+        </NavLink>
+        <NavLink to="/auth" className="navbar-link join-button">
+          <FaUserPlus className="nav-icon" /> Join Now
         </NavLink>
       </div>
     </nav>

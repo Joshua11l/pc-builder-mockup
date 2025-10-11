@@ -1,9 +1,0 @@
-.build-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin: 2rem 0;
-    /* optionally center the list */
-    align-items: center;
-  }
-  

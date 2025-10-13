@@ -1,23 +1,7 @@
 /**
- * Vendor Data Service
- * 
- * This service handles vendor pricing data management with caching capabilities.
- * It provides:
- * - Automatic data caching for offline functionality
- * - Periodic data synchronization (24-hour intervals)
- * - Price fluctuation simulation for realistic pricing
- * - Fallback mechanisms when APIs are unavailable
- * 
- * Functional Requirements Satisfied:
- * - FR15: Cache vendor pricing data for offline use and API downtime
- * - FR16: Automatically synchronize vendor pricing data periodically
- * 
- * Features:
- * - 24-hour cache refresh interval
- * - Dynamic price fluctuations (±10% from base price)
- * - Offline fallback data
- * - Cache status monitoring
- * - Manual refresh capabilities
+ * Vendor Data Service (FR15, FR16)
+ * Handles vendor pricing data management with caching capabilities, automatic synchronization,
+ * and price fluctuation simulation for realistic pricing with offline fallback mechanisms
  */
 class VendorDataService {
   constructor() {

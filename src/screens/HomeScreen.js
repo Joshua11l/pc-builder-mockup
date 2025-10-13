@@ -1,33 +1,11 @@
-/**
- * Home Screen - Landing Page Component
- * 
- * This is the main landing page that welcomes users to the PC Builder application.
- * It provides:
- * - Hero section with background video and call-to-action buttons
- * - "How It Works" section explaining the 3-step process
- * - Navigation to main application features
- * - Responsive design with modern visual effects
- * 
- * Functional Requirements Satisfied:
- * - FR1: Display welcome page with clear navigation to main features
- * - FR4: Provide clear instructions on how to use the application
- * - Responsive design for all device sizes
- * 
- * Visual Features:
- * - Full-screen video background with overlay
- * - Glassmorphism effects with backdrop blur
- * - Hover animations and transitions
- * - Grid layout for feature explanation cards
- * - Neon purple accent color scheme
- */
-
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import pcVideo from '../assets/pc.mp4'
 
 /**
- * HomeScreen Component
- * Main landing page that introduces users to the PC Builder application
+ * Home Screen - Landing Page Component (FR1, FR4)
+ * Main landing page with hero section, background video, call-to-action buttons,
+ * and "How It Works" section explaining the 3-step process with responsive design
  */
 export default function HomeScreen() {
   const nav = useNavigate()

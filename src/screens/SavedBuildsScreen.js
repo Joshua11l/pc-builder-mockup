@@ -1,29 +1,3 @@
-/**
- * Saved Builds Screen Component
- * 
- * This component manages and displays the user's saved PC builds.
- * It provides:
- * - Grid layout display of all saved builds
- * - Build management (view, export, delete)
- * - Performance metrics and total cost display
- * - Component thumbnails with external vendor links
- * - Export functionality for sharing builds
- * 
- * Functional Requirements Satisfied:
- * - FR9: Save custom PC builds to local storage for future reference
- * - FR10: View saved builds with all components and performance metrics
- * - FR11: Delete saved builds from the saved builds list
- * - FR12: Export builds in various formats (JSON, PDF, etc.)
- * - Display vendor links for easy purchasing
- * 
- * Visual Features:
- * - Responsive grid layout for different screen sizes
- * - Hover animations and interactive elements
- * - Component thumbnails with category icons
- * - Performance percentage and cost breakdown
- * - Clean card-based design with neon purple accents
- */
-
 import React, { useState, useEffect } from 'react'
 import { FaTrashAlt, FaEdit, FaDownload } from 'react-icons/fa'
 import ExportBuild from '../components/ExportBuild'
@@ -44,8 +18,9 @@ const THUMB_IMAGES = {
 }
 
 /**
- * SavedBuildsScreen Component
- * Displays and manages user's saved PC builds with export functionality
+ * SavedBuildsScreen Component (FR9, FR10, FR11, FR12)
+ * Manages and displays user's saved PC builds with grid layout, build management,
+ * performance metrics, vendor links, and export functionality
  */
 export default function SavedBuildsScreen() {
   // State for managing saved builds and export modal

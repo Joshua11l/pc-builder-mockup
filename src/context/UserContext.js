@@ -1,26 +1,3 @@
-/**
- * User Context Provider
- * 
- * This context manages user authentication and activity logging throughout the app.
- * It provides:
- * - User authentication state management
- * - Login/logout functionality with session persistence
- * - Comprehensive activity logging for security and analytics
- * - Local storage integration for offline functionality
- * 
- * Functional Requirements Satisfied:
- * - FR2: Allow new users to register with name, email, password
- * - FR3: Allow registered users to log in using valid credentials
- * - FR18: Provide secure logout functionality for all users
- * - FR19: Log user activity for security and analytics
- * 
- * Features:
- * - Session persistence across browser refreshes
- * - Secure data clearing on logout
- * - Activity tracking with timestamps and context
- * - User data validation and storage
- */
-
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
 // Create the user context
@@ -39,8 +16,12 @@ export const useUser = () => {
 }
 
 /**
- * UserProvider Component
- * Provides user authentication and activity logging context to child components
+ * UserProvider Component (FR2, FR3, FR18, FR19)
+ * Manages user authentication and activity logging throughout the app
+ * - User authentication state management
+ * - Login/logout functionality with session persistence
+ * - Comprehensive activity logging for security and analytics
+ * - Local storage integration for offline functionality
  */
 export const UserProvider = ({ children }) => {
   // User state management

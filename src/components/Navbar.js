@@ -1,28 +1,3 @@
-/**
- * Navigation Bar Component
- * 
- * This component provides the main navigation interface for the PC Builder application.
- * It handles:
- * - Site-wide navigation with active states
- * - User authentication status display
- * - Dynamic login/logout functionality
- * - Responsive design with neon purple theme
- * - Sticky positioning for always-visible navigation
- * 
- * Functional Requirements Satisfied:
- * - FR1: Navigate between all application screens
- * - FR17: Display user authentication status in navigation
- * - FR18: Provide accessible logout functionality
- * - User-friendly navigation with visual feedback
- * 
- * Visual Features:
- * - Neon purple accent color scheme
- * - Active state highlighting with glow effects
- * - Hover animations and transitions
- * - Logo and branding integration
- * - Responsive layout for all screen sizes
- */
-
 import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { FaHome, FaTools, FaSave, FaUserPlus, FaQuestionCircle, FaSignOutAlt, FaUser, FaBars, FaTimes } from 'react-icons/fa'
@@ -30,8 +5,9 @@ import { useUser } from '../context/UserContext'
 import logo from '../assets/pc-logo.png'
 
 /**
- * Navbar Component
- * Provides site navigation and user authentication controls
+ * Navbar Component (FR1, FR17, FR18)
+ * Main navigation interface with responsive design, user authentication status display,
+ * and dynamic login/logout functionality with sticky positioning
  */
 export default function Navbar() {
   // Access user context for authentication state

@@ -1,35 +1,3 @@
-/**
- * Build Screen Component - Main PC Builder Interface
- * 
- * This is the core component that handles PC build generation and management.
- * It provides a comprehensive interface for:
- * - Budget input and build generation
- * - Component visualization and swapping
- * - Compatibility checking and reporting
- * - Build saving and export functionality
- * - Real-time vendor pricing integration
- * 
- * Functional Requirements Satisfied:
- * - FR5: Allow users to input total budget for PC build generation
- * - FR6: Generate compatible PC build within given budget
- * - FR7: Allow users to swap individual parts within generated build
- * - FR8: Allow users to view detailed specifications of each component
- * - FR9: Provide vendor links for each selected component
- * - FR10: Allow users to save generated builds to their account
- * - FR14: Display compatibility report for each generated build
- * - FR15: Cache vendor pricing data for offline use
- * - FR16: Automatically synchronize vendor pricing data
- * 
- * Key Features:
- * - Dynamic vendor pricing with caching
- * - Component swap modal with alternatives
- * - Compatibility analysis with warnings/bottlenecks
- * - Performance scoring and visualization
- * - Activity logging for user actions
- * - Responsive grid layout for components
- * - Real-time budget utilization tracking
- */
-
 import Tippy from '@tippyjs/react'
 import 'tippy.js/dist/tippy.css'
 
@@ -151,6 +119,10 @@ export default function BuildScreen() {
     return () => clearInterval(iv)
   }, [optimal, items])
 
+  /**
+   * Handle PC Build Generation (FR5, FR6)
+   * Generates compatible PC build within given budget with optimized component selection
+   */
   async function handleGenerate(budgetInput) {
     setIsLoading(true)
     setItems([])
@@ -239,6 +211,10 @@ export default function BuildScreen() {
     }
   }
 
+  /**
+   * Handle Build Save (FR10)
+   * Saves generated builds to local storage for future reference
+   */
   function handleSave() {
     const builds = JSON.parse(localStorage.getItem('savedBuilds') || '[]')
     const newBuild = { items, optimal, budget, timestamp: Date.now() }
@@ -254,6 +230,10 @@ export default function BuildScreen() {
     })
   }
 
+  /**
+   * Handle Component Swapping (FR7, FR8)
+   * Allows users to swap individual parts within generated build and view specifications
+   */
   function handleSwapComponent(category, newComponent) {
     const oldComponent = items.find(item => item.category === category)
     const updatedItems = items.map(item => 
@@ -274,6 +254,10 @@ export default function BuildScreen() {
     })
   }
 
+  /**
+   * Check Build Compatibility (FR14)
+   * Display compatibility report for each generated build with warnings and bottlenecks
+   */
   function checkCompatibility(buildItems) {
     // Static compatibility checking simulation
     const totalPrice = buildItems.reduce((sum, item) => sum + item.price, 0)

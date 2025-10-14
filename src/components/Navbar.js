@@ -41,7 +41,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <div className="flex items-center gap-2">
               <img src={logo} alt="PC Builder Logo" className="w-8 h-8 object-contain" />
-              <span className="text-lg sm:text-xl font-bold text-accent hidden xs:block">PC Build Generator</span>
+              <span className="text-lg sm:text-xl font-bold text-white hidden xs:block">PC Build Generator</span>
               <span className="text-lg font-bold text-accent xs:hidden">PC Builder</span>
             </div>
           </div>

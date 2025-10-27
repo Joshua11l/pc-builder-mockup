@@ -38,7 +38,7 @@ export default function App() {
       {/* React Router enables client-side navigation */}
       <Router>
         {/* Main app container with dark theme styling */}
-        <div className="min-h-screen bg-bg font-inter text-text-main">
+        <div className="relative min-h-screen text-text-main">
           {/* Navigation bar appears on all pages */}
           <Navbar />
           

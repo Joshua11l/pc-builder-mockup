@@ -6,20 +6,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#4f46e5',
-        'primary-light': '#eef2ff',
-        secondary: '#6b7280',
-        bg: '#131314',
-        'card-bg': '#262630',
-        'text-main': '#ededf2',
-        'text-sub': '#b3b3c2',
-        'text-dark': '#111827',
-        accent: '#a259ff',
-        'accent-alt': '#00ffe7',
-        'border-muted': '#42424c',
+        primary: '#7c3aed',
+        'primary-soft': '#ede9fe',
+        secondary: '#0ea5e9',
+        bg: '#0f172a',
+        'bg-soft': '#111c30',
+        'card-bg': '#111c30',
+        'card-elevated': '#152238',
+        'text-main': '#f8fafc',
+        'text-sub': '#94a3b8',
+        'text-dark': '#0f172a',
+        accent: '#38bdf8',
+        'accent-alt': '#c084fc',
+        'border-muted': '#1e293b',
       },
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
+      },
+      backgroundImage: {
+        'body-gradient': 'linear-gradient(135deg, #0f172a 0%, #111c30 45%, #1e293b 100%)',
+        'card-gradient': 'linear-gradient(180deg, rgba(124, 58, 237, 0.12) 0%, rgba(14, 165, 233, 0.08) 100%)'
+      },
+      boxShadow: {
+        glow: '0 20px 45px -15px rgba(14,165,233,0.45)',
+        'inner-glow': 'inset 0 0 0 1px rgba(148,163,184,0.08)',
       },
       backdropBlur: {
         '8': '8px',

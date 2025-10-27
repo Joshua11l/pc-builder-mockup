@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 // Create the user context
 const UserContext = createContext()
@@ -28,16 +28,6 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  useEffect(() => {
-    // Check for existing session on app load
-    const savedUser = localStorage.getItem('currentUser')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
-      setIsAuthenticated(true)
-      logActivity('session_restored', { userId: JSON.parse(savedUser).id })
-    }
-  }, [])
-
   /**
    * Login Function - Authenticates user and starts session
    * @param {Object} userData - User data object containing id, name, email
@@ -63,7 +53,7 @@ export const UserProvider = ({ children }) => {
     
     // Clear sensitive data for security
     localStorage.removeItem('userPreferences')
-    sessionStorage.clear()
+   sessionStorage.clear()
   }
 
   /**
@@ -74,7 +64,7 @@ export const UserProvider = ({ children }) => {
    * @param {string} action - Type of action performed (login, build_generation, etc.)
    * @param {Object} data - Additional context data for the action
    */
-  const logActivity = (action, data = {}) => {
+  const logActivity = useCallback((action, data = {}) => {
     const activityLog = JSON.parse(localStorage.getItem('userActivityLog') || '[]')
     const logEntry = {
       id: Date.now() + Math.random(),           // Unique identifier
@@ -95,7 +85,18 @@ export const UserProvider = ({ children }) => {
     
     localStorage.setItem('userActivityLog', JSON.stringify(activityLog))
     console.log('Activity logged:', logEntry) // For development monitoring
-  }
+  }, [user])
+
+  useEffect(() => {
+    // Check for existing session on app load
+    const savedUser = localStorage.getItem('currentUser')
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser)
+      setUser(parsedUser)
+      setIsAuthenticated(true)
+      logActivity('session_restored', { userId: parsedUser.id })
+    }
+  }, [logActivity])
 
   const value = {
     user,

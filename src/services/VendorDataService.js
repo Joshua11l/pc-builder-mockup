@@ -212,4 +212,5 @@ class VendorDataService {
 }
 
 // Export singleton instance
-export default new VendorDataService()
+const vendorDataService = new VendorDataService()
+export default vendorDataService

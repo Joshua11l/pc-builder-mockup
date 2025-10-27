@@ -24,11 +24,14 @@ export default function BudgetInput({ onSubmit, loading }) {
   };
 
   return (
-    <form className="flex items-center gap-4 mb-12" onSubmit={handleSubmit}>
+    <form
+      className="w-full max-w-xl flex flex-col sm:flex-row items-center gap-4"
+      onSubmit={handleSubmit}
+    >
       {/* Budget Input Field */}
       <input
         type="number"
-        className="w-96 max-w-[80%] px-5 py-4 text-xl text-black bg-white border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent placeholder-gray-500"
+        className="flex-1 w-full px-5 py-4 text-lg text-white bg-white/5 border border-white/10 rounded-2xl shadow-inner-glow focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-white/40"
         placeholder="Enter your budget ($)"
         value={budget}
         onChange={e => setBudget(e.target.value)}
@@ -39,7 +42,7 @@ export default function BudgetInput({ onSubmit, loading }) {
       {/* Submit Button with Loading State */}
       <button
         type="submit"
-        className="inline-flex items-center justify-center min-w-[140px] bg-slate-800 text-white border-none rounded-lg px-8 py-4 text-lg font-semibold cursor-pointer shadow-md transition-all duration-200 hover:bg-slate-700 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+        className="inline-flex items-center justify-center min-w-[160px] bg-primary text-white rounded-2xl px-8 py-4 text-lg font-semibold shadow-glow transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
         disabled={loading}
       >
         {loading

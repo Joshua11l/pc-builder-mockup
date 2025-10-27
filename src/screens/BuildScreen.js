@@ -2,14 +2,13 @@ import Tippy from '@tippyjs/react'
 import 'tippy.js/dist/tippy.css'
 
 import React, { useState, useEffect } from 'react'
-import { AiOutlineHeart, AiFillHeart, AiOutlineCheck, AiOutlineSwap } from 'react-icons/ai'
+import { AiOutlineHeart, AiFillHeart, AiOutlineSwap } from 'react-icons/ai'
 import { FaExclamationTriangle, FaChartLine } from 'react-icons/fa'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import BudgetInput from '../components/BudgetInput'
 import VendorDataService from '../services/VendorDataService'
 import { useUser } from '../context/UserContext'
-import pcPlaceholder from '../assets/pc-placeholder.avif'
 import Ryzen5 from '../assets/ryzen5.jpeg'
 import RamImg from '../assets/Ram.webp'
 import RogImg from '../assets/Rog.jpg'
@@ -21,14 +20,6 @@ import {
 } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 
-const DIST = 45
-const ANGLES = { CPU: -90, GPU: 180, RAM: 0, MB: 135, PSU: 45, OTHER: 90 }
-const POSITIONS = Object.fromEntries(
-  Object.entries(ANGLES).map(([k, d]) => {
-    const r = (d * Math.PI) / 180
-    return [k, { x: `${50 + DIST * Math.cos(r)}%`, y: `${50 + DIST * Math.sin(r)}%` }]
-  })
-)
 const TOOLTIP = {
   CPU: 'Central processing unit handles main calculations',
   GPU: 'Graphics processing unit renders images and video',
@@ -294,212 +285,242 @@ export default function BuildScreen() {
   const totalPrice = items.reduce((sum, i) => sum + i.price, 0)
 
   return (
-    <div className="bg-bg text-text-main max-w-4xl mx-auto py-8 px-4 text-center">
+    <div className="max-w-6xl mx-auto py-10 px-4 text-text-main">
       <ToastContainer />
 
       {items.length === 0 ? (
-        <div className="flex flex-col items-center my-12 mb-8">
-          <h2 className="text-5xl font-bold text-white m-0 mb-4">Create a Build</h2>
-          <p className="text-gray-100 mb-6 text-lg">
-            Enter your budget and see an interactive breakdown of your PC.
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card-elevated/80 backdrop-blur-8 px-6 sm:px-12 py-16 text-center shadow-glow">
+          <div className="absolute -top-24 right-12 h-48 w-48 rounded-full bg-gradient-to-br from-primary/30 to-secondary/20 blur-3xl opacity-60" />
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/10 text-xs uppercase tracking-[0.35em] text-text-sub">
+            Smart build engine
+          </span>
+          <h2 className="mt-6 text-4xl sm:text-5xl font-bold text-white">Create a Build</h2>
+          <p className="mt-4 text-lg text-text-sub max-w-2xl mx-auto">
+            Enter your budget and let our optimizer balance performance, thermals, and vendor availability for you.
           </p>
 
-          <div className="flex gap-4 mb-4 justify-center">
-            <select
-              className="px-4 py-2 rounded-xl border border-border-muted bg-card-bg text-text-main text-sm cursor-pointer transition-shadow duration-200 focus:shadow-lg focus:shadow-accent/50 focus:outline-none hover:shadow-lg hover:shadow-accent/50"
-              value={brandFilter}
-              onChange={e => setBrandFilter(e.target.value)}
-            >
-              <option value="">All Brands</option>
-              <option value="AMD">AMD</option>
-              <option value="Intel">Intel</option>
-              <option value="NVIDIA">NVIDIA</option>
-            </select>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            <label className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-left">
+              <span className="text-xs uppercase tracking-wide text-text-sub">Preferred brand</span>
+              <select
+                className="w-full bg-transparent text-sm font-medium text-white/90 focus:outline-none focus:ring-2 focus:ring-primary/60 rounded-xl border border-white/10 px-3 py-2"
+                value={brandFilter}
+                onChange={e => setBrandFilter(e.target.value)}
+              >
+                <option className="text-text-dark" value="">All Brands</option>
+                <option className="text-text-dark" value="AMD">AMD</option>
+                <option className="text-text-dark" value="Intel">Intel</option>
+                <option className="text-text-dark" value="NVIDIA">NVIDIA</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-left">
+              <span className="text-xs uppercase tracking-wide text-text-sub">Performance tier</span>
+              <select
+                className="w-full bg-transparent text-sm font-medium text-white/90 focus:outline-none focus:ring-2 focus:ring-primary/60 rounded-xl border border-white/10 px-3 py-2"
+                value={tierFilter}
+                onChange={e => setTierFilter(e.target.value)}
+              >
+                <option className="text-text-dark" value="">Balanced</option>
+                <option className="text-text-dark" value="entry">Entry Level</option>
+                <option className="text-text-dark" value="mid">Mid Range</option>
+                <option className="text-text-dark" value="enthusiast">Enthusiast</option>
+              </select>
+            </label>
           </div>
 
-          <BudgetInput onSubmit={handleGenerate} loading={isLoading} />
+          <div className="mt-10 flex justify-center">
+            <BudgetInput onSubmit={handleGenerate} loading={isLoading} />
+          </div>
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center my-12 mb-8">
-            <div className="flex items-center mb-2 w-full max-w-2xl">
-              <h2 className="text-5xl font-bold text-white m-0 flex-1">Build Successfully Created</h2>
-              <div className="ml-auto cursor-pointer" title="Save this build" onClick={handleSave}>
-                {saved
-                  ? <AiFillHeart className="text-2xl text-red-500 transition-all duration-200 ml-4 drop-shadow-lg drop-shadow-red-500/60" size={24} />
-                  : <AiOutlineHeart className="text-2xl text-accent transition-all duration-200 ml-4 hover:drop-shadow-lg hover:drop-shadow-accent/60" size={24} />
-                }
-              </div>
-            </div>
-
-            <p className="text-gray-100 mb-6 text-lg">
-              Here's your optimized setup based on your budget. Click any part to explore or purchase.
-            </p>
-
-            <div className="text-xl font-bold text-accent bg-accent/15 px-5 py-3 rounded-xl mb-4 space-y-2 text-left">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card-elevated/80 backdrop-blur-8 px-6 sm:px-10 py-10 text-left shadow-glow">
+            <div className="absolute -top-24 -right-10 h-48 w-48 rounded-full bg-gradient-to-br from-primary/35 to-secondary/20 blur-3xl opacity-60" />
+            <div className="relative flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
               <div>
-                Total Price: ${totalPrice} / Budget: ${budget}
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/10 text-xs uppercase tracking-[0.35em] text-text-sub">
+                  Build ready
+                </span>
+                <h2 className="mt-4 text-4xl font-bold text-white">Build Successfully Created</h2>
+                <p className="mt-3 text-text-sub max-w-2xl">
+                  Here's your optimized setup based on your budget. Explore vendor links, swap alternatives, or save the entire rig for later.
+                </p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <div className="inline-flex items-center bg-green-600 text-white px-3 py-1 rounded-lg text-sm font-semibold">
-                  <AiOutlineCheck size={18} className="mr-1" />
-                  Compatible
-                </div>
-                <div className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold ${
-                  vendorDataStatus === 'online' 
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                    : vendorDataStatus === 'offline'
-                    ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                    : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                }`}>
-                  <div className={`w-2 h-2 rounded-full mr-2 ${
-                    vendorDataStatus === 'online' ? 'bg-green-400' 
-                    : vendorDataStatus === 'offline' ? 'bg-red-400' 
-                    : 'bg-yellow-400'
-                  }`} />
-                  Pricing {vendorDataStatus === 'loading' ? 'Loading...' : vendorDataStatus === 'online' ? 'Live' : 'Cached'}
+              <button
+                className={`self-start inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-base transition-colors duration-200 ${
+                  saved
+                    ? 'bg-primary/20 text-primary'
+                    : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20'
+                }`}
+                onClick={handleSave}
+                title="Save this build"
+              >
+                {saved ? <AiFillHeart className="text-xl" /> : <AiOutlineHeart className="text-xl" />}
+              </button>
+            </div>
+
+            <div className="relative mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+                <div className="text-xs uppercase tracking-wide text-text-sub">Total Price</div>
+                <div className="mt-1 text-2xl font-semibold text-white">${totalPrice}</div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+                <div className="text-xs uppercase tracking-wide text-text-sub">Budget</div>
+                <div className="mt-1 text-2xl font-semibold text-white">${budget}</div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+                <div className="text-xs uppercase tracking-wide text-text-sub">Pricing Source</div>
+                <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-white">
+                  <span
+                    className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                      vendorDataStatus === 'online'
+                        ? 'bg-green-400'
+                        : vendorDataStatus === 'offline'
+                        ? 'bg-red-400'
+                        : 'bg-yellow-400'
+                    }`}
+                  />
+                  {vendorDataStatus === 'loading'
+                    ? 'Syncing live data…'
+                    : vendorDataStatus === 'online'
+                    ? 'Live vendor feed'
+                    : 'Cached pricing'}
                 </div>
               </div>
             </div>
-
-            {/* Compatibility Report */}
-            {compatibilityReport && (
-              <div className="bg-card-bg border border-border-muted rounded-xl p-6 mb-8">
-                <h3 className="text-2xl font-bold text-accent mb-6 flex items-center justify-center gap-2">
-                  <FaChartLine />
-                  Compatibility Report
-                </h3>
-                
-                {/* Metrics Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div className="bg-bg border border-border-muted rounded-lg p-4 text-center">
-                    <div className="text-text-sub text-sm font-medium mb-2">Power Consumption</div>
-                    <div className="text-3xl font-bold text-text-main">{compatibilityReport.powerConsumption}W</div>
-                    <div className="text-xs text-text-sub mt-1">Estimated Power Draw</div>
-                  </div>
-                  <div className="bg-bg border border-border-muted rounded-lg p-4 text-center">
-                    <div className="text-text-sub text-sm font-medium mb-2">Budget Utilization</div>
-                    <div className="text-3xl font-bold text-text-main">
-                      {isFinite(compatibilityReport.budgetUtilization) ? compatibilityReport.budgetUtilization : '100'}%
-                    </div>
-                    <div className="text-xs text-text-sub mt-1">Of Total Budget</div>
-                  </div>
-                  <div className="bg-bg border border-border-muted rounded-lg p-4 text-center">
-                    <div className="text-text-sub text-sm font-medium mb-2">Performance Score</div>
-                    <div className="text-3xl font-bold text-accent">{optimal}%</div>
-                    <div className="text-xs text-text-sub mt-1">Optimization Level</div>
-                  </div>
-                </div>
-
-                {/* Warnings and Bottlenecks */}
-                {(compatibilityReport.bottlenecks.length > 0 || compatibilityReport.warnings.length > 0) && (
-                  <div className="bg-bg border border-border-muted rounded-lg p-4">
-                    <h4 className="text-lg font-semibold text-text-main mb-3">Issues & Recommendations</h4>
-                    <div className="space-y-3">
-                      {compatibilityReport.bottlenecks.map((bottleneck, idx) => (
-                        <div key={idx} className="flex items-start gap-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                          <FaExclamationTriangle className="text-yellow-500 mt-0.5 flex-shrink-0" size={16} />
-                          <div>
-                            <div className="text-yellow-400 font-semibold text-sm">Potential Bottleneck</div>
-                            <div className="text-text-main">{bottleneck}</div>
-                          </div>
-                        </div>
-                      ))}
-                      {compatibilityReport.warnings.map((warning, idx) => (
-                        <div key={idx} className="flex items-start gap-3 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                          <FaExclamationTriangle className="text-orange-500 mt-0.5 flex-shrink-0" size={16} />
-                          <div className="text-left">
-                            <div className="text-orange-400 font-semibold text-sm text-left">Warning</div>
-                            <div className="text-text-main text-left">{warning}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
-          {/* Performance Overview Section */}
-          <div className="bg-card-bg border border-border-muted rounded-xl p-6 mb-8">
-            <h3 className="text-2xl font-bold text-accent mb-4 text-center">Performance Overview</h3>
+          {compatibilityReport && (
+            <div className="rounded-3xl border border-white/10 bg-card-elevated/80 backdrop-blur-8 px-6 sm:px-10 py-10 text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <FaChartLine className="text-secondary" />
+                    Compatibility Overview
+                  </h3>
+                  <p className="text-sm text-text-sub mt-1">
+                    Balanced components with quick highlights on power draw, budget usage, and optimizations.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 text-left">
+                  <div className="text-xs uppercase tracking-wide text-text-sub">Power Consumption</div>
+                  <div className="mt-2 text-3xl font-semibold text-white">{compatibilityReport.powerConsumption}W</div>
+                  <div className="text-xs text-text-sub mt-1">Estimated sustained draw</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 text-left">
+                  <div className="text-xs uppercase tracking-wide text-text-sub">Budget Utilization</div>
+                  <div className="mt-2 text-3xl font-semibold text-white">
+                    {isFinite(compatibilityReport.budgetUtilization) ? compatibilityReport.budgetUtilization : '100'}%
+                  </div>
+                  <div className="text-xs text-text-sub mt-1">Of your available budget</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-primary/20 to-secondary/20 px-6 py-5 text-left">
+                  <div className="text-xs uppercase tracking-wide text-text-sub">Performance Score</div>
+                  <div className="mt-2 text-3xl font-semibold text-white">{optimal}%</div>
+                  <div className="text-xs text-text-sub mt-1">Optimization level</div>
+                </div>
+              </div>
+
+              {(compatibilityReport.bottlenecks.length > 0 || compatibilityReport.warnings.length > 0) && (
+                <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 px-6 py-5">
+                  <h4 className="text-lg font-semibold text-white mb-4">Issues & Recommendations</h4>
+                  <div className="space-y-3">
+                    {compatibilityReport.bottlenecks.map((bottleneck, idx) => (
+                      <div key={idx} className="flex items-start gap-3 rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-4 py-3">
+                        <FaExclamationTriangle className="text-yellow-400 mt-0.5 flex-shrink-0" size={16} />
+                        <div>
+                          <div className="text-yellow-300 font-semibold text-sm">Potential Bottleneck</div>
+                          <div className="text-text-main">{bottleneck}</div>
+                        </div>
+                      </div>
+                    ))}
+                    {compatibilityReport.warnings.map((warning, idx) => (
+                      <div key={idx} className="flex items-start gap-3 rounded-xl border border-orange-500/40 bg-orange-500/10 px-4 py-3">
+                        <FaExclamationTriangle className="text-orange-400 mt-0.5 flex-shrink-0" size={16} />
+                        <div className="text-left">
+                          <div className="text-orange-300 font-semibold text-sm">Warning</div>
+                          <div className="text-text-main">{warning}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="rounded-3xl border border-white/10 bg-card-elevated/80 backdrop-blur-8 px-6 sm:px-10 py-10 text-center">
+            <h3 className="text-2xl font-bold text-white mb-6">Performance Overview</h3>
             <div className="flex justify-center">
-              <div className="w-40 h-40">
+              <div className="w-44 h-44 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
                 <CircularProgressbarWithChildren
                   value={animated}
                   maxValue={100}
                   styles={buildStyles({
-                    pathColor: '#a259ff',
-                    trailColor: '#391f5b',
+                    pathColor: '#38bdf8',
+                    trailColor: 'rgba(148, 163, 184, 0.15)',
                     strokeLinecap: 'round',
                     rotation: 0.75
                   })}
                   strokeWidth={12}
                   circleRatio={0.5}
                 >
-                  <div className="text-3xl font-extrabold text-accent">{animated}%</div>
+                  <div className="text-3xl font-extrabold text-white">{animated}%</div>
                   <div className="text-sm text-text-sub font-semibold">Performance Score</div>
                 </CircularProgressbarWithChildren>
               </div>
             </div>
           </div>
 
-          {/* PC Components Grid */}
-          <div className="bg-card-bg border border-border-muted rounded-xl p-6">
-            <h3 className="text-2xl font-bold text-accent mb-6 text-center">Your PC Components</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="rounded-3xl border border-white/10 bg-card-elevated/80 backdrop-blur-8 px-6 sm:px-10 py-10">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <h3 className="text-2xl font-bold text-white">Your PC Components</h3>
+              <p className="text-sm text-text-sub">Tap any card to swap parts or jump straight to the vendor page.</p>
+            </div>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {items.map(i => (
                 <Tippy key={i.id} content={TOOLTIP[i.category]} delay={100}>
-                  <div className="relative group bg-bg border border-border-muted rounded-xl p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:border-accent">
-                    {/* Component Category Badge */}
-                    <div className="absolute -top-2 left-4 bg-accent text-white px-3 py-1 rounded-full text-xs font-bold">
+                  <div className="relative group rounded-2xl border border-white/10 bg-white/5 px-5 py-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-glow">
+                    <div className="absolute -top-3 left-5 inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/30 to-secondary/30 text-xs font-semibold text-white/80 backdrop-blur-8 border border-white/10">
                       {i.category}
                     </div>
-
-                    {/* Component Image */}
-                    <div className="flex justify-center mb-4 mt-2">
-                      <img 
-                        src={THUMB_IMAGES[i.category]} 
-                        alt={i.name} 
-                        className="w-20 h-20 rounded-lg object-cover shadow-md" 
+                    <div className="flex justify-center mb-5 mt-3">
+                      <img
+                        src={THUMB_IMAGES[i.category]}
+                        alt={i.name}
+                        className="w-20 h-20 rounded-xl object-cover border border-white/10"
                       />
                     </div>
-
-                    {/* Component Details */}
                     <div className="text-center space-y-2">
-                      <h4 className="text-lg font-bold text-text-main">{i.name}</h4>
-                      <div className="text-2xl font-bold text-accent">${i.price}</div>
-                      
-                      {/* Vendor and Availability Info */}
+                      <h4 className="text-lg font-bold text-white">{i.name}</h4>
+                      <div className="text-2xl font-bold text-secondary">${i.price}</div>
                       {i.vendor && (
-                        <div className="text-sm text-text-sub">
-                          <div>Vendor: {i.vendor}</div>
-                          <div className={`${i.availability === 'In Stock' ? 'text-green-400' : 'text-yellow-400'}`}>
+                        <div className="text-xs text-text-sub space-y-1">
+                          <div className="font-semibold text-white/70">Vendor: {i.vendor}</div>
+                          <div className={i.availability === 'In Stock' ? 'text-emerald-300' : 'text-amber-300'}>
                             {i.availability}
                           </div>
                         </div>
                       )}
-
-                      {/* Alternative Suggestion */}
-                      <div className="text-xs text-text-sub bg-accent/10 rounded p-2">
+                      <div className="text-xs text-text-sub bg-white/5 rounded-xl px-3 py-2 border border-white/10">
                         Alternative: {ALT_SUGGESTIONS[i.category]}
                       </div>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2 mt-6">
                       <a
                         href={i.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 bg-accent text-white py-2 px-4 rounded-lg text-center font-semibold transition-colors duration-200 hover:bg-purple-600"
+                        className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-white py-2 text-sm font-semibold shadow-glow hover:bg-primary/90 hover:shadow-lg transition-all duration-200"
                       >
                         Buy Now
                       </a>
                       <button
                         onClick={() => setSwappingComponent(i.category)}
-                        className="bg-border-muted text-text-main py-2 px-4 rounded-lg font-semibold transition-colors duration-200 hover:bg-accent hover:text-white"
+                        className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 text-white/80 hover:text-white hover:bg-white/15 transition-colors duration-200"
                         title="Swap component"
                       >
                         <AiOutlineSwap size={16} />
@@ -515,31 +536,29 @@ export default function BuildScreen() {
 
       {/* Component Swap Modal */}
       {swappingComponent && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-card-bg border border-border-muted rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-            <h3 className="text-xl font-bold text-white mb-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl border border-white/15 bg-card-elevated/95 px-6 sm:px-8 py-8 shadow-2xl">
+            <h3 className="text-2xl font-bold text-white mb-6">
               Swap {swappingComponent} Component
             </h3>
-            
+
             <div className="grid grid-cols-1 gap-4 mb-6">
               {COMPONENT_ALTERNATIVES[swappingComponent]?.map(component => (
                 <div
                   key={component.id}
-                  className="flex items-center gap-4 p-3 bg-bg border border-border-muted rounded-lg hover:border-accent transition-colors duration-200 cursor-pointer"
+                  className="flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-primary/40 transition-colors duration-200 cursor-pointer"
                   onClick={() => handleSwapComponent(swappingComponent, component)}
                 >
-                  <img 
-                    src={THUMB_IMAGES[swappingComponent]} 
-                    alt={component.name} 
-                    className="w-16 h-16 rounded-lg object-cover" 
+                  <img
+                    src={THUMB_IMAGES[swappingComponent]}
+                    alt={component.name}
+                    className="w-16 h-16 rounded-xl object-cover border border-white/10"
                   />
                   <div className="flex-1">
-                    <div className="text-text-main font-semibold">{component.name}</div>
-                    <div className="text-accent font-bold">${component.price}</div>
+                    <div className="text-white font-semibold">{component.name}</div>
+                    <div className="text-secondary font-bold">${component.price}</div>
                   </div>
-                  <div className="text-text-sub text-sm">
-                    Click to select
-                  </div>
+                  <div className="text-text-sub text-sm">Click to select</div>
                 </div>
               ))}
             </div>
@@ -547,7 +566,7 @@ export default function BuildScreen() {
             <div className="flex justify-end">
               <button
                 onClick={() => setSwappingComponent(null)}
-                className="px-4 py-2 border border-border-muted text-text-sub rounded-lg hover:bg-bg transition-colors duration-200"
+                className="px-4 py-2 rounded-full border border-white/15 text-text-sub hover:text-white hover:bg-white/10 transition-colors duration-200"
               >
                 Cancel
               </button>

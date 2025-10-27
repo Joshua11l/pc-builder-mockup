@@ -8,7 +8,7 @@ export default function ExportBuild({ build, onClose }) {
   const handleExport = async () => {
     setIsExporting(true)
     
-    // TODO: Implement actual export logic
+    // TODO: Implement actual export logic FR13
     const exportData = {
       buildName: build.name || `PC Build - ${new Date().toLocaleDateString()}`,
       budget: build.budget,
@@ -132,77 +132,84 @@ export default function ExportBuild({ build, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-card-bg border border-border-muted rounded-xl p-6 w-full max-w-md">
-        <h3 className="text-xl font-bold text-white mb-4">Export Build</h3>
-        
-        <div className="space-y-4 mb-6">
-          <div>
-            <label className="block text-text-main font-medium mb-2">Export Format</label>
-            <div className="space-y-2">
-              <label className="flex items-center space-x-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="exportType"
-                  value="pdf"
-                  checked={exportType === 'pdf'}
-                  onChange={(e) => setExportType(e.target.value)}
-                  className="text-accent focus:ring-accent"
-                />
-                <FaFilePdf className="text-red-500" />
-                <span className="text-text-main">PDF Document</span>
-              </label>
-              
-              <label className="flex items-center space-x-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="exportType"
-                  value="csv"
-                  checked={exportType === 'csv'}
-                  onChange={(e) => setExportType(e.target.value)}
-                  className="text-accent focus:ring-accent"
-                />
-                <FaFileCsv className="text-green-500" />
-                <span className="text-text-main">CSV Spreadsheet</span>
-              </label>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-card-elevated/95 px-6 py-8 shadow-2xl">
+        <div className="absolute -right-16 -top-20 h-40 w-40 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 blur-3xl opacity-60" />
+        <div className="relative">
+          <h3 className="text-2xl font-bold text-white mb-4">Export Build</h3>
+          
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-white/80 mb-2">Export Format</label>
+              <div className="space-y-3">
+                <label className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors duration-200 ${
+                  exportType === 'pdf' ? 'border-secondary/60 bg-white/10' : 'border-white/10 bg-white/5 hover:bg-white/10'
+                }`}>
+                  <input
+                    type="radio"
+                    name="exportType"
+                    value="pdf"
+                    checked={exportType === 'pdf'}
+                    onChange={(e) => setExportType(e.target.value)}
+                    className="text-secondary focus:ring-secondary"
+                  />
+                  <FaFilePdf className="text-secondary" />
+                  <span className="text-white">PDF Document</span>
+                </label>
+                
+                <label className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors duration-200 ${
+                  exportType === 'csv' ? 'border-secondary/60 bg-white/10' : 'border-white/10 bg-white/5 hover:bg-white/10'
+                }`}>
+                  <input
+                    type="radio"
+                    name="exportType"
+                    value="csv"
+                    checked={exportType === 'csv'}
+                    onChange={(e) => setExportType(e.target.value)}
+                    className="text-secondary focus:ring-secondary"
+                  />
+                  <FaFileCsv className="text-emerald-400" />
+                  <span className="text-white">CSV Spreadsheet</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+              <p className="text-text-sub text-sm">
+                {exportType === 'pdf' 
+                  ? 'Generate a polished HTML export ready to print or save as PDF.'
+                  : 'Download structured data for spreadsheets and price comparisons.'
+                }
+              </p>
             </div>
           </div>
 
-          <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
-            <p className="text-text-main text-sm">
-              {exportType === 'pdf' 
-                ? 'Export as a formatted HTML document that can be saved as PDF'
-                : 'Export component data as a CSV file for use in spreadsheet applications'
-              }
-            </p>
+          <div className="flex gap-3">
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-white font-semibold py-3 px-4 transition-all duration-200 shadow-glow hover:bg-primary/90 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isExporting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <FaDownload />
+                  Export {exportType.toUpperCase()}
+                </>
+              )}
+            </button>
+            
+            <button
+              onClick={onClose}
+              className="px-4 py-3 rounded-2xl border border-white/10 text-text-sub hover:text-white hover:bg-white/10 transition-colors duration-200"
+            >
+              Cancel
+            </button>
           </div>
-        </div>
-
-        <div className="flex gap-3">
-          <button
-            onClick={handleExport}
-            disabled={isExporting}
-            className="flex-1 bg-accent text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {isExporting ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Exporting...
-              </>
-            ) : (
-              <>
-                <FaDownload />
-                Export {exportType.toUpperCase()}
-              </>
-            )}
-          </button>
-          
-          <button
-            onClick={onClose}
-            className="px-4 py-3 border border-border-muted text-text-sub rounded-lg hover:bg-bg transition-colors duration-200"
-          >
-            Cancel
-          </button>
         </div>
       </div>
     </div>

@@ -179,7 +179,7 @@ export const exportToPDF = async (build, buildName, totalPrice, compatibilityRep
     // Footer
     doc.setFontSize(8);
     doc.setTextColor(128);
-    doc.text('Generated with PC Build Generator - https://pcbuilder.com', 105, 285, { align: 'center' });
+    doc.text('Generated with PC Build Generator', 105, 285, { align: 'center' });
 
     // Save PDF
     doc.save(`${buildName.replace(/\s+/g, '_')}_build.pdf`);

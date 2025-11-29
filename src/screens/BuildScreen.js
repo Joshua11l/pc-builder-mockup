@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { AiOutlineHeart, AiFillHeart, AiOutlineSwap } from 'react-icons/ai'
 import { FaExclamationTriangle, FaChartLine } from 'react-icons/fa'
 import { ToastContainer, toast } from 'react-toastify'
@@ -13,6 +14,7 @@ import {
   buildStyles
 } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
+import { PromptModal } from '../components/Modal'
 
 const PRICE_FORMATTER = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -64,6 +66,7 @@ const mapComponentToDisplayItem = (type, component) => {
 }
 
 export default function BuildScreen() {
+  const location = useLocation()
   const [items, setItems]       = useState([])
   const [budget, setBudget]     = useState(0)
   const [brandFilter, setBrandFilter] = useState('')
@@ -78,6 +81,8 @@ export default function BuildScreen() {
   const [generatedBuild, setGeneratedBuild] = useState(null)
   const [user, setUser] = useState(null)
   const [componentAlternatives, setComponentAlternatives] = useState({})
+  const [promptModal, setPromptModal] = useState({ isOpen: false, type: null, title: '', message: '', placeholder: '', defaultValue: '' })
+  const [editMode, setEditMode] = useState(false)
   const { logActivity } = useUser()
 
   useEffect(() => {
@@ -87,6 +92,34 @@ export default function BuildScreen() {
       setUser(currentUser)
     }
     fetchUser()
+
+    // Load saved build if passed from SavedBuildsScreen
+    if (location.state?.editBuild) {
+      const editBuild = location.state.editBuild
+
+      // Load components as display items
+      const loadedItems = Object.entries(editBuild.components || {})
+        .map(([type, component]) => mapComponentToDisplayItem(type, component))
+        .filter(Boolean)
+
+      // Calculate performance score for loaded build
+      const loadedBudget = editBuild.budget || editBuild.total_price || 1000
+      const loadedPrice = editBuild.total_price || 0
+      const budgetUtilization = Math.min(loadedPrice / loadedBudget, 1.0)
+      const baseScore = budgetUtilization * 100
+      const componentCount = loadedItems.length
+      const completenessBonus = Math.min(componentCount / 8, 1.0) * 10
+      const calculatedPerformance = Math.min(95, Math.max(15, Math.floor(baseScore * 0.85 + completenessBonus)))
+
+      setItems(loadedItems)
+      setBudget(loadedBudget)
+      setOptimal(calculatedPerformance)
+      setGeneratedBuild(editBuild.components)
+      setCompatibilityReport(editBuild.compatibility_report)
+      setEditMode(true) // Enable edit mode automatically
+
+      toast.info(`Loaded build: ${editBuild.build_name}`, { position: 'top-right' })
+    }
   }, [])
 
   useEffect(() => {
@@ -139,7 +172,16 @@ export default function BuildScreen() {
           return acc
         }, {})
 
-        const performanceScore = Math.min(95, Math.floor((normalizedBudget / result.totalPrice) * 80) + 15)
+        // Calculate performance score based on budget utilization and component quality
+        // Higher spending = better performance, but diminishing returns
+        const budgetUtilization = Math.min(result.totalPrice / normalizedBudget, 1.0)
+        const baseScore = budgetUtilization * 100
+
+        // Adjust for component count (more components = more complete build)
+        const componentCount = displayItems.length
+        const completenessBonus = Math.min(componentCount / 8, 1.0) * 10
+
+        const performanceScore = Math.min(95, Math.max(15, Math.floor(baseScore * 0.85 + completenessBonus)))
 
         setItems(displayItems)
         setOptimal(performanceScore)
@@ -173,7 +215,7 @@ export default function BuildScreen() {
    * Handle Build Save (FR10)
    * Saves generated builds to Supabase database for future reference
    */
-  async function handleSave() {
+  function handleSave() {
     if (!user) {
       toast.error('Please login to save builds', { position: 'top-right' })
       return
@@ -184,33 +226,49 @@ export default function BuildScreen() {
       return
     }
 
-    const buildName = prompt('Enter a name for this build:')
-    if (!buildName) return
+    setPromptModal({
+      isOpen: true,
+      type: 'save',
+      title: 'Save Build',
+      message: 'Enter a name for this build:',
+      placeholder: 'My Gaming PC',
+      defaultValue: ''
+    })
+  }
 
-    const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0)
+  async function handlePromptSubmit(value) {
+    if (promptModal.type === 'save') {
+      const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0)
 
-    const result = await saveBuild(
-      user.id,
-      buildName,
-      generatedBuild,
-      totalPrice,
-      budget,
-      compatibilityReport
-    )
-
-    if (result.success) {
-      setSaved(true)
-      toast.success('Build successfully saved!', { position: 'top-right', autoClose: 2500 })
-
-      logActivity('build_saved', {
-        buildId: result.data.id,
-        buildName,
+      const result = await saveBuild(
+        user.id,
+        value,
+        generatedBuild,
         totalPrice,
-        components: items.length
-      })
-    } else {
-      toast.error('Failed to save build: ' + result.error, { position: 'top-right' })
+        budget,
+        compatibilityReport
+      )
+
+      if (result.success) {
+        setSaved(true)
+        toast.success('Build successfully saved!', { position: 'top-right', autoClose: 2500 })
+
+        logActivity('build_saved', {
+          buildId: result.data.id,
+          buildName: value,
+          totalPrice,
+          components: items.length
+        })
+      } else {
+        toast.error('Failed to save build: ' + result.error, { position: 'top-right' })
+      }
+    } else if (promptModal.type === 'exportPDF') {
+      await handleExportPDFWithName(value)
+    } else if (promptModal.type === 'exportCSV') {
+      handleExportCSVWithName(value)
     }
+
+    setPromptModal({ isOpen: false, type: null, title: '', message: '', placeholder: '', defaultValue: '' })
   }
 
   /**
@@ -277,15 +335,23 @@ export default function BuildScreen() {
   /**
    * Export build to PDF (FR13)
    */
-  async function handleExportPDF() {
+  function handleExportPDF() {
     if (!generatedBuild) {
       toast.error('Please generate a build first', { position: 'top-right' })
       return
     }
 
-    const buildName = prompt('Enter build name for PDF:', 'My PC Build')
-    if (!buildName) return
+    setPromptModal({
+      isOpen: true,
+      type: 'exportPDF',
+      title: 'Export to PDF',
+      message: 'Enter a name for your build:',
+      placeholder: 'My PC Build',
+      defaultValue: 'My PC Build'
+    })
+  }
 
+  async function handleExportPDFWithName(buildName) {
     const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0)
 
     const result = await exportToPDF(generatedBuild, buildName, totalPrice, compatibilityReport)
@@ -306,9 +372,17 @@ export default function BuildScreen() {
       return
     }
 
-    const buildName = prompt('Enter build name for CSV:', 'My PC Build')
-    if (!buildName) return
+    setPromptModal({
+      isOpen: true,
+      type: 'exportCSV',
+      title: 'Export to CSV',
+      message: 'Enter a name for your build:',
+      placeholder: 'My PC Build',
+      defaultValue: 'My PC Build'
+    })
+  }
 
+  function handleExportCSVWithName(buildName) {
     const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0)
 
     exportToCSV(generatedBuild, buildName, totalPrice)
@@ -372,7 +446,7 @@ export default function BuildScreen() {
           </div>
         </div>
       ) : (
-        <>
+        <div className="space-y-8">
           <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card-elevated/80 backdrop-blur-8 px-6 sm:px-10 py-10 text-left shadow-glow">
             <div className="absolute -top-24 -right-10 h-48 w-48 rounded-full bg-gradient-to-br from-primary/35 to-secondary/20 blur-3xl opacity-60" />
             <div className="relative flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
@@ -385,7 +459,7 @@ export default function BuildScreen() {
                   Here's your optimized setup based on your budget. Explore vendor links, swap alternatives, or save the entire rig for later.
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   className={`inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-base transition-colors duration-200 ${
                     saved
@@ -398,6 +472,18 @@ export default function BuildScreen() {
                   {saved ? <AiFillHeart className="text-xl" /> : <AiOutlineHeart className="text-xl" />}
                 </button>
                 <button
+                  className={`inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm transition-colors duration-200 ${
+                    editMode
+                      ? 'bg-secondary/20 text-secondary border-secondary/40'
+                      : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20'
+                  }`}
+                  onClick={() => setEditMode(!editMode)}
+                  title="Toggle edit mode"
+                >
+                  <FaChartLine />
+                  {editMode ? 'View Mode' : 'Edit Mode'}
+                </button>
+                <button
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 text-white/80 hover:text-white hover:bg-white/20 px-4 py-2 text-sm transition-colors duration-200"
                   onClick={handleExportPDF}
                   title="Export as PDF"
@@ -405,7 +491,7 @@ export default function BuildScreen() {
                   PDF
                 </button>
                 <button
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 text-white/80 hover:text-white hover:bg-white/20 px-4 py-2 text-sm transition-colors duration-200"
+                  className="inline-flex items-centers justify-center gap-2 rounded-full border border-white/15 bg-white/10 text-white/80 hover:text-white hover:bg-white/20 px-4 py-2 text-sm transition-colors duration-200"
                   onClick={handleExportCSV}
                   title="Export as CSV"
                 >
@@ -563,28 +649,41 @@ export default function BuildScreen() {
                       </div>
                     </div>
                     <div className="flex gap-2 mt-6">
-                      <a
-                        href={item.link || '#'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-white py-2 text-sm font-semibold shadow-glow hover:bg-primary/90 hover:shadow-lg transition-all duration-200"
-                      >
-                        Buy Now
-                      </a>
-                      <button
-                        onClick={() => setSwappingComponent(item.category)}
-                        className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 text-white/80 hover:text-white hover:bg-white/15 transition-colors duration-200"
-                        title="Swap component"
-                      >
-                        <AiOutlineSwap size={16} />
-                      </button>
+                      {!editMode ? (
+                        <>
+                          <a
+                            href={item.link || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-white py-2 text-sm font-semibold shadow-glow hover:bg-primary/90 hover:shadow-lg transition-all duration-200"
+                          >
+                            Buy Now
+                          </a>
+                          <button
+                            onClick={() => setSwappingComponent(item.category)}
+                            className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 text-white/80 hover:text-white hover:bg-white/15 transition-colors duration-200"
+                            title="Swap component"
+                          >
+                            <AiOutlineSwap size={16} />
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => setSwappingComponent(item.category)}
+                          className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-secondary text-white py-2 text-sm font-semibold shadow-glow hover:bg-secondary/90 transition-all duration-200"
+                          title="Change component"
+                        >
+                          <AiOutlineSwap size={16} />
+                          Change Component
+                        </button>
+                      )}
                     </div>
                   </div>
                 )
               })}
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* Component Swap Modal */}
@@ -628,6 +727,18 @@ export default function BuildScreen() {
           </div>
         </div>
       )}
+
+      <PromptModal
+        isOpen={promptModal.isOpen}
+        onClose={() => setPromptModal({ isOpen: false, type: null, title: '', message: '', placeholder: '', defaultValue: '' })}
+        onSubmit={handlePromptSubmit}
+        title={promptModal.title}
+        message={promptModal.message}
+        placeholder={promptModal.placeholder}
+        defaultValue={promptModal.defaultValue}
+        confirmText="Submit"
+        cancelText="Cancel"
+      />
     </div>
   )
 }

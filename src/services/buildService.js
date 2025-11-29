@@ -118,15 +118,17 @@ export const generateBuild = async (budget) => {
     }
 
     // Initial budget allocation percentages (will be adjusted dynamically)
+    // Add slight randomization to allocation (±2%) for variety
+    const randomOffset = () => (Math.random() - 0.5) * 0.04 // Random ±2%
     const initialAllocation = {
-      cpu: 0.20,      // 20%
-      gpu: 0.30,      // 30% (most important for gaming)
-      motherboard: 0.12, // 12%
-      ram: 0.10,      // 10%
-      storage: 0.10,  // 10%
-      psu: 0.08,      // 8%
-      case: 0.06,     // 6%
-      cooler: 0.04,   // 4%
+      cpu: 0.20 + randomOffset(),      // 18-22%
+      gpu: 0.30 + randomOffset(),      // 28-32% (most important for gaming)
+      motherboard: 0.12 + randomOffset(), // 10-14%
+      ram: 0.10 + randomOffset(),      // 8-12%
+      storage: 0.10 + randomOffset(),  // 8-12%
+      psu: 0.08 + randomOffset(),      // 6-10%
+      case: 0.06 + randomOffset(),     // 4-8%
+      cooler: 0.04 + randomOffset(),   // 2-6%
     }
 
     // Try generating build with multiple strategies
@@ -314,7 +316,7 @@ const getCompatiblePool = (componentsGrouped, type, currentBuild) => {
 }
 
 /**
- * Smart component selection with lookahead
+ * Smart component selection with lookahead and randomization
  */
 const selectComponentSmartly = (components, idealBudget, remainingBudget, type, step, totalSteps) => {
   if (!components.length) return null
@@ -354,6 +356,26 @@ const selectComponentSmartly = (components, idealBudget, remainingBudget, type, 
     return a.distanceFromTarget - b.distanceFromTarget
   })
 
+  // RANDOMIZATION: Instead of always picking the top component,
+  // select from the top 3-5 best options to add variety
+  const topCandidatesCount = Math.min(5, scoredComponents.length)
+  const topCandidates = scoredComponents.slice(0, topCandidatesCount)
+
+  // Weight selection towards better components (top has higher chance)
+  const weights = topCandidates.map((_, index) =>
+    Math.pow(2, topCandidatesCount - index) // Exponential weighting
+  )
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0)
+
+  // Randomly select based on weights
+  let random = Math.random() * totalWeight
+  for (let i = 0; i < topCandidates.length; i++) {
+    random -= weights[i]
+    if (random <= 0) {
+      return topCandidates[i].component
+    }
+  }
+
   return scoredComponents[0]?.component || sorted[0]
 }
 
@@ -366,7 +388,7 @@ const generateMinimumViableBuild = async (componentsGrouped, budget) => {
     const buildAlternatives = {}
     let totalPrice = 0
 
-    // Select absolute cheapest compatible components
+    // Select cheapest compatible components (with slight randomization)
     const categories = ['cpu', 'motherboard', 'ram', 'gpu', 'storage', 'case', 'psu', 'cooler']
 
     for (const type of categories) {
@@ -376,9 +398,11 @@ const generateMinimumViableBuild = async (componentsGrouped, budget) => {
         return { success: false, error: `No compatible ${type} available` }
       }
 
-      // Get cheapest
+      // Get cheapest options (select from top 3 cheapest for variety)
       const sorted = [...pool].sort((a, b) => toNumber(a.price) - toNumber(b.price))
-      const selected = sorted[0]
+      const topCheapest = sorted.slice(0, Math.min(3, sorted.length))
+      const randomIndex = Math.floor(Math.random() * topCheapest.length)
+      const selected = topCheapest[randomIndex]
 
       build[type] = selected
       buildAlternatives[type] = getAlternativeComponents(pool, selected.id)

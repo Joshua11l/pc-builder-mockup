@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { FaTrashAlt, FaEdit, FaDownload, FaMicrochip, FaMemory, FaHdd, FaPlug, FaBox, FaFan } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { getUserBuilds, deleteBuild } from '../services/buildService'
 import { getCurrentUser } from '../services/authService'
 import { exportToPDF, exportToCSV } from '../services/exportService'
 import ExportBuild from '../components/ExportBuild'
+import { ConfirmModal } from '../components/Modal'
 
 // Component icons mapping
 const COMPONENT_ICONS = {
@@ -29,6 +31,8 @@ export default function SavedBuildsScreen() {
   const [exportingBuild, setExportingBuild] = useState(null)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, buildId: null, buildName: '' })
+  const navigate = useNavigate()
 
   // Load saved builds from Supabase on component mount
   useEffect(() => {
@@ -62,10 +66,12 @@ export default function SavedBuildsScreen() {
    * Remove a saved build from storage
    * Satisfies FR11: Delete saved builds from the saved builds list
    */
-  async function removeBuild(buildId, buildName) {
-    if (!window.confirm(`Are you sure you want to delete "${buildName}"?`)) return
+  function removeBuild(buildId, buildName) {
+    setDeleteModal({ isOpen: true, buildId, buildName })
+  }
 
-    const result = await deleteBuild(buildId, user.id)
+  async function confirmDeleteBuild() {
+    const result = await deleteBuild(deleteModal.buildId, user.id)
 
     if (result.success) {
       toast.success('Build deleted successfully!', { position: 'top-right' })
@@ -74,6 +80,8 @@ export default function SavedBuildsScreen() {
     } else {
       toast.error('Failed to delete build: ' + result.error, { position: 'top-right' })
     }
+
+    setDeleteModal({ isOpen: false, buildId: null, buildName: '' })
   }
 
   /**
@@ -82,6 +90,14 @@ export default function SavedBuildsScreen() {
    */
   function handleExport(build) {
     setExportingBuild(build)
+  }
+
+  /**
+   * Handle build edit - navigate to BuildScreen with saved build data
+   */
+  function handleEdit(build) {
+    // Pass build data via navigation state
+    navigate('/build', { state: { editBuild: build } })
   }
 
   /**
@@ -231,6 +247,14 @@ export default function SavedBuildsScreen() {
                     <div className="flex gap-2">
                       <button
                         type="button"
+                        className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-white/10 bg-white/5 text-white/70 hover:text-secondary hover:border-secondary/40 hover:bg-secondary/10 transition-colors duration-200"
+                        title="Edit build"
+                        onClick={() => handleEdit(build)}
+                      >
+                        <FaEdit size={14} />
+                      </button>
+                      <button
+                        type="button"
                         className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-white/10 bg-white/5 text-white/70 hover:text-white hover:bg-white/15 transition-colors duration-200"
                         title="Export PDF"
                         onClick={() => handleExportPDF(build)}
@@ -259,6 +283,17 @@ export default function SavedBuildsScreen() {
             onClose={() => setExportingBuild(null)}
           />
         )}
+
+        <ConfirmModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, buildId: null, buildName: '' })}
+          onConfirm={confirmDeleteBuild}
+          title="Delete Build"
+          message={`Are you sure you want to delete "${deleteModal.buildName}"? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          isDanger={true}
+        />
       </div>
     </div>
   )

@@ -1,68 +1,66 @@
-import Tippy from '@tippyjs/react'
-import 'tippy.js/dist/tippy.css'
-
 import React, { useState, useEffect } from 'react'
 import { AiOutlineHeart, AiFillHeart, AiOutlineSwap } from 'react-icons/ai'
 import { FaExclamationTriangle, FaChartLine } from 'react-icons/fa'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import BudgetInput from '../components/BudgetInput'
-import VendorDataService from '../services/VendorDataService'
 import { useUser } from '../context/UserContext'
-import Ryzen5 from '../assets/ryzen5.jpeg'
-import RamImg from '../assets/Ram.webp'
-import RogImg from '../assets/Rog.jpg'
-import RTXImg from '../assets/RTX.jpg'
-import FocusImg from '../assets/Focus.jpg'
+import { generateBuild, saveBuild } from '../services/buildService'
+import { getCurrentUser } from '../services/authService'
+import { exportToPDF, exportToCSV } from '../services/exportService'
 import {
   CircularProgressbarWithChildren,
   buildStyles
 } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 
-const TOOLTIP = {
-  CPU: 'Central processing unit handles main calculations',
-  GPU: 'Graphics processing unit renders images and video',
-  RAM: 'Random access memory for temporary data storage',
-  MB:  'Motherboard connects all components together',
-  PSU: 'Power supply unit provides stable power',
-  OTHER: 'Additional component'
-}
-const THUMB_IMAGES = { CPU: Ryzen5, GPU: RTXImg, RAM: RamImg, MB: RogImg, PSU: FocusImg }
-const ALT_SUGGESTIONS = {
-  CPU: 'Intel i5-11400F',
-  GPU: 'AMD RX 6600',
-  RAM: 'Corsair Vengeance 16GB',
-  MB: 'MSI B550-A Pro',
-  PSU: 'Corsair CX650M'
+const PRICE_FORMATTER = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+})
+const VENDOR_LABELS = { amazon: 'Amazon', newegg: 'Newegg', bestbuy: 'Best Buy' }
+const VENDOR_PRIORITY = ['amazon', 'newegg', 'bestbuy']
+
+const formatCurrency = (value = 0) => PRICE_FORMATTER.format(Number(value) || 0)
+
+const getVendorInfo = (links = {}) => {
+  if (!links || typeof links !== 'object') {
+    return { url: '#', label: 'Vendor' }
+  }
+
+  for (const key of VENDOR_PRIORITY) {
+    if (links[key]) {
+      return { url: links[key], label: VENDOR_LABELS[key] }
+    }
+  }
+
+  const [fallbackKey, fallbackUrl] = Object.entries(links)[0] || []
+  if (fallbackUrl) {
+    const label = fallbackKey ? fallbackKey.charAt(0).toUpperCase() + fallbackKey.slice(1) : 'Vendor'
+    return { url: fallbackUrl, label }
+  }
+
+  return { url: '#', label: 'Vendor' }
 }
 
-const COMPONENT_ALTERNATIVES = {
-  CPU: [
-    { id: 'cpu1', name: 'Ryzen 5 5600X', price: 199, link: 'https://www.amazon.com/AMD-Ryzen-5600X-12-Thread-Processor/dp/B08166SLDF' },
-    { id: 'cpu2', name: 'Intel i5-11400F', price: 189, link: 'https://www.amazon.com/Intel-i5-11400F-Desktop-Processor-Cache/dp/B08X6PPTTH' },
-    { id: 'cpu3', name: 'Ryzen 7 5700X', price: 259, link: 'https://www.amazon.com/AMD-Ryzen-5700X-16-Thread-Processor/dp/B09VCHR1VH' }
-  ],
-  GPU: [
-    { id: 'gpu1', name: 'RTX 3060', price: 329, link: 'https://www.bestbuy.com/site/gigabyte-nvidia-geforce-rtx-3060-12gb-gddr6-pci-express-4-0-graphics-card-black/6468931.p?skuId=6468931' },
-    { id: 'gpu2', name: 'AMD RX 6600', price: 299, link: 'https://www.amazon.com/MSI-Radeon-RX-6600-8G/dp/B098Q4M5J3' },
-    { id: 'gpu3', name: 'RTX 3060 Ti', price: 449, link: 'https://www.bestbuy.com/site/nvidia-geforce-rtx-3060-ti-8gb-gddr6-pci-express-4-0-graphics-card-dark-platinum-and-black/6439402.p?skuId=6439402' }
-  ],
-  RAM: [
-    { id: 'ram1', name: '16GB DDR4 3200MHz', price: 79, link: 'https://www.bestbuy.com/site/corsair-vengeance-rgb-pro-16gb-2x8gb-ddr4-3200mhz-c16-udimm-desktop-memory-black/6256216.p?skuId=6256216' },
-    { id: 'ram2', name: '32GB DDR4 3600MHz', price: 139, link: 'https://www.amazon.com/Corsair-Vengeance-PC4-28800-Desktop-Memory/dp/B07RM39V5F' },
-    { id: 'ram3', name: '16GB DDR4 3600MHz', price: 89, link: 'https://www.amazon.com/G-Skill-Ripjaws-PC4-28800-CL16-19-19-39-F4-3600C16D-16GVKC/dp/B07X8DVDZZ' }
-  ],
-  MB: [
-    { id: 'mb1', name: 'ROG STRIX B550-F', price: 180, link: 'https://www.amazon.com/ROG-B550-F-II-Motherboard-Addressable/dp/B09GP7P1XS' },
-    { id: 'mb2', name: 'MSI B550-A Pro', price: 139, link: 'https://www.amazon.com/MSI-MAG-B550-TOMAHAWK-Motherboard/dp/B089CZSQB4' },
-    { id: 'mb3', name: 'ASUS TUF B550M', price: 159, link: 'https://www.amazon.com/ASUS-TUF-B550M-PLUS-Motherboard/dp/B088W7RKVZ' }
-  ],
-  PSU: [
-    { id: 'psu1', name: 'Focus GX-650', price: 110, link: 'https://www.amazon.com/Seasonic-SSR-650FX-Modular-Warranty-Compact/dp/B073H33X7R' },
-    { id: 'psu2', name: 'Corsair CX650M', price: 95, link: 'https://www.amazon.com/CORSAIR-CX650M-Modular-Bronze-Supply/dp/B01B72W0A2' },
-    { id: 'psu3', name: 'EVGA 750W Gold', price: 129, link: 'https://www.amazon.com/EVGA-Modular-Warranty-Supply-220-G3-0750-X1/dp/B005BE058W' }
-  ]
+const mapComponentToDisplayItem = (type, component) => {
+  if (!component) return null
+  const vendorInfo = getVendorInfo(component.vendor_links)
+
+  return {
+    id: component.id,
+    category: type.toUpperCase(),
+    name: component.name,
+    price: Number(component.price) || 0,
+    link: vendorInfo.url,
+    vendor: vendorInfo.label,
+    availability: component.availability || 'In Stock',
+    specs: component.specs,
+    brand: component.brand,
+    image_url: component.image_url || component.imageURL || component.thumbnail_url || ''
+  }
 }
 
 export default function BuildScreen() {
@@ -76,26 +74,23 @@ export default function BuildScreen() {
   const [saved, setSaved]         = useState(false)
   const [swappingComponent, setSwappingComponent] = useState(null)
   const [compatibilityReport, setCompatibilityReport] = useState(null)
-  const [vendorDataStatus, setVendorDataStatus] = useState('loading')
+  const [vendorDataStatus, setVendorDataStatus] = useState('online')
+  const [generatedBuild, setGeneratedBuild] = useState(null)
+  const [user, setUser] = useState(null)
+  const [componentAlternatives, setComponentAlternatives] = useState({})
   const { logActivity } = useUser()
 
   useEffect(() => {
-    // Load vendor data on mount
-    const loadVendorData = async () => {
-      try {
-        setVendorDataStatus('loading')
-        await VendorDataService.getVendorData()
-        setVendorDataStatus('online')
-      } catch (error) {
-        console.error('Failed to load vendor data:', error)
-        setVendorDataStatus('offline')
-      }
+    // Get current user
+    const fetchUser = async () => {
+      const currentUser = await getCurrentUser()
+      setUser(currentUser)
     }
-    loadVendorData()
+    fetchUser()
   }, [])
 
   useEffect(() => {
-    if (!items.length) return
+    if (!items || items.length === 0) return
     setAnimated(0)
     const duration  = 800
     const frameRate = 15
@@ -115,110 +110,107 @@ export default function BuildScreen() {
    * Generates compatible PC build within given budget with optimized component selection
    */
   async function handleGenerate(budgetInput) {
+    const normalizedBudget = Number(budgetInput) || 0
     setIsLoading(true)
     setItems([])
     setOptimal(0)
     setSaved(false)
-    setBudget(budgetInput)
+    setBudget(normalizedBudget)
+    setComponentAlternatives({})
 
-    logActivity('build_generation_started', { budget: budgetInput, filters: { brandFilter, tierFilter } })
+    logActivity('build_generation_started', { budget: normalizedBudget, filters: { brandFilter, tierFilter } })
 
     try {
-      // Get fresh vendor data
-      const vendorData = await VendorDataService.getVendorData()
-      
-      // Simulate build generation with real vendor pricing
-      setTimeout(() => {
-        const demo = [
-          { 
-            id: '1', 
-            category: 'CPU', 
-            name: vendorData.components.CPU[0].name,
-            price: vendorData.components.CPU[0].currentPrice,
-            link: vendorData.components.CPU[0].link,
-            vendor: vendorData.components.CPU[0].vendor,
-            availability: vendorData.components.CPU[0].availability
-          },
-          { 
-            id: '2', 
-            category: 'GPU', 
-            name: vendorData.components.GPU[0].name,
-            price: vendorData.components.GPU[0].currentPrice,
-            link: vendorData.components.GPU[0].link,
-            vendor: vendorData.components.GPU[0].vendor,
-            availability: vendorData.components.GPU[0].availability
-          },
-          { 
-            id: '3', 
-            category: 'RAM', 
-            name: vendorData.components.RAM[0].name,
-            price: vendorData.components.RAM[0].currentPrice,
-            link: vendorData.components.RAM[0].link,
-            vendor: vendorData.components.RAM[0].vendor,
-            availability: vendorData.components.RAM[0].availability
-          },
-          { 
-            id: '4', 
-            category: 'MB', 
-            name: vendorData.components.MB[0].name,
-            price: vendorData.components.MB[0].currentPrice,
-            link: vendorData.components.MB[0].link,
-            vendor: vendorData.components.MB[0].vendor,
-            availability: vendorData.components.MB[0].availability
-          },
-          { 
-            id: '5', 
-            category: 'PSU', 
-            name: vendorData.components.PSU[0].name,
-            price: vendorData.components.PSU[0].currentPrice,
-            link: vendorData.components.PSU[0].link,
-            vendor: vendorData.components.PSU[0].vendor,
-            availability: vendorData.components.PSU[0].availability
-          }
-        ]
-        
-        const totalPrice = demo.reduce((sum, item) => sum + item.price, 0)
-        const performanceScore = Math.min(90, Math.floor((budgetInput / totalPrice) * 70) + 20)
-        
-        setItems(demo)
+      // Generate build using Supabase
+      const result = await generateBuild(normalizedBudget)
+
+      if (result.success) {
+        // Convert build to display format
+        const buildComponents = result.build
+        const displayItems = Object.entries(buildComponents)
+          .map(([type, component]) => mapComponentToDisplayItem(type, component))
+          .filter(Boolean)
+
+        const alternativeDisplayMap = Object.entries(result.alternatives || {}).reduce((acc, [type, comps]) => {
+          const categoryKey = type.toUpperCase()
+          acc[categoryKey] = (comps || [])
+            .map(component => mapComponentToDisplayItem(type, component))
+            .filter(Boolean)
+          return acc
+        }, {})
+
+        const performanceScore = Math.min(95, Math.floor((normalizedBudget / result.totalPrice) * 80) + 15)
+
+        setItems(displayItems)
         setOptimal(performanceScore)
-        checkCompatibility(demo)
+        setGeneratedBuild(result.build)
+        setCompatibilityReport(result.compatibilityReport)
+        setComponentAlternatives(alternativeDisplayMap)
         setIsLoading(false)
-        
-        logActivity('build_generation_completed', { 
-          budget: budgetInput, 
-          totalPrice, 
+
+        toast.success('Build generated successfully!', { position: 'top-right', autoClose: 2000 })
+
+        logActivity('build_generation_completed', {
+          budget: normalizedBudget,
+          totalPrice: result.totalPrice,
           performanceScore,
-          components: demo.length,
-          vendorDataStatus: vendorData.apiStatus
+          components: displayItems.length
         })
-      }, 1200)
-      
+      } else {
+        throw new Error(result.error || 'Failed to generate build')
+      }
+
     } catch (error) {
       console.error('Build generation failed:', error)
       setIsLoading(false)
-      toast.error('Failed to generate build. Please try again.', { position: 'top-right' })
-      logActivity('build_generation_failed', { budget: budgetInput, error: error.message })
+      const message = error.message || 'Failed to generate build. Please try again.'
+      toast.error(message, { position: 'top-right' })
+      logActivity('build_generation_failed', { budget: normalizedBudget, error: message })
     }
   }
 
   /**
    * Handle Build Save (FR10)
-   * Saves generated builds to local storage for future reference
+   * Saves generated builds to Supabase database for future reference
    */
-  function handleSave() {
-    const builds = JSON.parse(localStorage.getItem('savedBuilds') || '[]')
-    const newBuild = { items, optimal, budget, timestamp: Date.now() }
-    builds.push(newBuild)
-    localStorage.setItem('savedBuilds', JSON.stringify(builds))
-    setSaved(true)
-    toast.success('Build successfully saved!', { position: 'top-right', autoClose: 2500 })
-    
-    logActivity('build_saved', { 
-      buildId: newBuild.timestamp, 
-      totalPrice: items.reduce((sum, item) => sum + item.price, 0),
-      components: items.length 
-    })
+  async function handleSave() {
+    if (!user) {
+      toast.error('Please login to save builds', { position: 'top-right' })
+      return
+    }
+
+    if (!generatedBuild) {
+      toast.error('Please generate a build first', { position: 'top-right' })
+      return
+    }
+
+    const buildName = prompt('Enter a name for this build:')
+    if (!buildName) return
+
+    const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0)
+
+    const result = await saveBuild(
+      user.id,
+      buildName,
+      generatedBuild,
+      totalPrice,
+      budget,
+      compatibilityReport
+    )
+
+    if (result.success) {
+      setSaved(true)
+      toast.success('Build successfully saved!', { position: 'top-right', autoClose: 2500 })
+
+      logActivity('build_saved', {
+        buildId: result.data.id,
+        buildName,
+        totalPrice,
+        components: items.length
+      })
+    } else {
+      toast.error('Failed to save build: ' + result.error, { position: 'top-right' })
+    }
   }
 
   /**
@@ -253,7 +245,7 @@ export default function BuildScreen() {
     // Static compatibility checking simulation
     const totalPrice = buildItems.reduce((sum, item) => sum + item.price, 0)
     const budgetUtilization = (totalPrice / budget) * 100
-    
+
     const report = {
       compatible: true,
       powerConsumption: Math.floor(Math.random() * 200) + 300, // 300-500W
@@ -266,14 +258,14 @@ export default function BuildScreen() {
     if (budgetUtilization > 95) {
       report.warnings.push('Budget nearly exceeded')
     }
-    
+
     const cpu = buildItems.find(item => item.category === 'CPU')
     const gpu = buildItems.find(item => item.category === 'GPU')
-    
+
     if (cpu?.price < 150 && gpu?.price > 400) {
       report.bottlenecks.push('CPU may bottleneck high-end GPU')
     }
-    
+
     if (report.powerConsumption > 450) {
       report.warnings.push('High power consumption - ensure adequate cooling')
     }
@@ -282,13 +274,60 @@ export default function BuildScreen() {
     return report
   }
 
-  const totalPrice = items.reduce((sum, i) => sum + i.price, 0)
+  /**
+   * Export build to PDF (FR13)
+   */
+  async function handleExportPDF() {
+    if (!generatedBuild) {
+      toast.error('Please generate a build first', { position: 'top-right' })
+      return
+    }
+
+    const buildName = prompt('Enter build name for PDF:', 'My PC Build')
+    if (!buildName) return
+
+    const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0)
+
+    const result = await exportToPDF(generatedBuild, buildName, totalPrice, compatibilityReport)
+
+    if (result.success) {
+      toast.success('PDF exported successfully!', { position: 'top-right' })
+    } else {
+      toast.error('Failed to export PDF: ' + result.error, { position: 'top-right' })
+    }
+  }
+
+  /**
+   * Export build to CSV (FR13)
+   */
+  function handleExportCSV() {
+    if (!generatedBuild) {
+      toast.error('Please generate a build first', { position: 'top-right' })
+      return
+    }
+
+    const buildName = prompt('Enter build name for CSV:', 'My PC Build')
+    if (!buildName) return
+
+    const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0)
+
+    exportToCSV(generatedBuild, buildName, totalPrice)
+    toast.success('CSV exported successfully!', { position: 'top-right' })
+  }
+
+  const totalPrice = items && items.length > 0 ? items.reduce((sum, i) => sum + (Number(i.price) || 0), 0) : 0
+  const formattedTotalPrice = formatCurrency(totalPrice)
+  const formattedBudget = formatCurrency(budget)
+  const activeSwapItem = swappingComponent ? items.find(item => item.category === swappingComponent) : null
+  const swapOptions = swappingComponent
+    ? (componentAlternatives[swappingComponent] || []).filter(option => option.id !== activeSwapItem?.id)
+    : []
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4 text-text-main">
       <ToastContainer />
 
-      {items.length === 0 ? (
+      {!items || items.length === 0 ? (
         <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card-elevated/80 backdrop-blur-8 px-6 sm:px-12 py-16 text-center shadow-glow">
           <div className="absolute -top-24 right-12 h-48 w-48 rounded-full bg-gradient-to-br from-primary/30 to-secondary/20 blur-3xl opacity-60" />
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/10 text-xs uppercase tracking-[0.35em] text-text-sub">
@@ -301,29 +340,29 @@ export default function BuildScreen() {
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-left">
-              <span className="text-xs uppercase tracking-wide text-text-sub">Preferred brand</span>
+              <span className="text-xs uppercase tracking-wide text-text-sub">Primary Use</span>
               <select
                 className="w-full bg-transparent text-sm font-medium text-white/90 focus:outline-none focus:ring-2 focus:ring-primary/60 rounded-xl border border-white/10 px-3 py-2"
                 value={brandFilter}
                 onChange={e => setBrandFilter(e.target.value)}
               >
-                <option className="text-text-dark" value="">All Brands</option>
-                <option className="text-text-dark" value="AMD">AMD</option>
-                <option className="text-text-dark" value="Intel">Intel</option>
-                <option className="text-text-dark" value="NVIDIA">NVIDIA</option>
+                <option className="text-text-dark" value="">All-Purpose</option>
+                <option className="text-text-dark" value="gaming">Gaming</option>
+                <option className="text-text-dark" value="workstation">Content Creation</option>
+                <option className="text-text-dark" value="office">Office Work</option>
               </select>
             </label>
             <label className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-left">
-              <span className="text-xs uppercase tracking-wide text-text-sub">Performance tier</span>
+              <span className="text-xs uppercase tracking-wide text-text-sub">Budget Priority</span>
               <select
                 className="w-full bg-transparent text-sm font-medium text-white/90 focus:outline-none focus:ring-2 focus:ring-primary/60 rounded-xl border border-white/10 px-3 py-2"
                 value={tierFilter}
                 onChange={e => setTierFilter(e.target.value)}
               >
                 <option className="text-text-dark" value="">Balanced</option>
-                <option className="text-text-dark" value="entry">Entry Level</option>
-                <option className="text-text-dark" value="mid">Mid Range</option>
-                <option className="text-text-dark" value="enthusiast">Enthusiast</option>
+                <option className="text-text-dark" value="performance">Max Performance</option>
+                <option className="text-text-dark" value="value">Best Value</option>
+                <option className="text-text-dark" value="efficiency">Power Efficient</option>
               </select>
             </label>
           </div>
@@ -346,27 +385,43 @@ export default function BuildScreen() {
                   Here's your optimized setup based on your budget. Explore vendor links, swap alternatives, or save the entire rig for later.
                 </p>
               </div>
-              <button
-                className={`self-start inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-base transition-colors duration-200 ${
-                  saved
-                    ? 'bg-primary/20 text-primary'
-                    : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20'
-                }`}
-                onClick={handleSave}
-                title="Save this build"
-              >
-                {saved ? <AiFillHeart className="text-xl" /> : <AiOutlineHeart className="text-xl" />}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className={`inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-base transition-colors duration-200 ${
+                    saved
+                      ? 'bg-primary/20 text-primary'
+                      : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20'
+                  }`}
+                  onClick={handleSave}
+                  title="Save this build"
+                >
+                  {saved ? <AiFillHeart className="text-xl" /> : <AiOutlineHeart className="text-xl" />}
+                </button>
+                <button
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 text-white/80 hover:text-white hover:bg-white/20 px-4 py-2 text-sm transition-colors duration-200"
+                  onClick={handleExportPDF}
+                  title="Export as PDF"
+                >
+                  PDF
+                </button>
+                <button
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 text-white/80 hover:text-white hover:bg-white/20 px-4 py-2 text-sm transition-colors duration-200"
+                  onClick={handleExportCSV}
+                  title="Export as CSV"
+                >
+                  CSV
+                </button>
+              </div>
             </div>
 
             <div className="relative mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
                 <div className="text-xs uppercase tracking-wide text-text-sub">Total Price</div>
-                <div className="mt-1 text-2xl font-semibold text-white">${totalPrice}</div>
+                <div className="mt-1 text-2xl font-semibold text-white">{formattedTotalPrice}</div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
                 <div className="text-xs uppercase tracking-wide text-text-sub">Budget</div>
-                <div className="mt-1 text-2xl font-semibold text-white">${budget}</div>
+                <div className="mt-1 text-2xl font-semibold text-white">{formattedBudget}</div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
                 <div className="text-xs uppercase tracking-wide text-text-sub">Pricing Source</div>
@@ -424,11 +479,11 @@ export default function BuildScreen() {
                 </div>
               </div>
 
-              {(compatibilityReport.bottlenecks.length > 0 || compatibilityReport.warnings.length > 0) && (
+              {compatibilityReport && (compatibilityReport.bottlenecks?.length > 0 || compatibilityReport.warnings?.length > 0) && (
                 <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 px-6 py-5">
                   <h4 className="text-lg font-semibold text-white mb-4">Issues & Recommendations</h4>
                   <div className="space-y-3">
-                    {compatibilityReport.bottlenecks.map((bottleneck, idx) => (
+                    {compatibilityReport.bottlenecks?.map((bottleneck, idx) => (
                       <div key={idx} className="flex items-start gap-3 rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-4 py-3">
                         <FaExclamationTriangle className="text-yellow-400 mt-0.5 flex-shrink-0" size={16} />
                         <div>
@@ -437,7 +492,7 @@ export default function BuildScreen() {
                         </div>
                       </div>
                     ))}
-                    {compatibilityReport.warnings.map((warning, idx) => (
+                    {compatibilityReport.warnings?.map((warning, idx) => (
                       <div key={idx} className="flex items-start gap-3 rounded-xl border border-orange-500/40 bg-orange-500/10 px-4 py-3">
                         <FaExclamationTriangle className="text-orange-400 mt-0.5 flex-shrink-0" size={16} />
                         <div className="text-left">
@@ -481,37 +536,35 @@ export default function BuildScreen() {
               <p className="text-sm text-text-sub">Tap any card to swap parts or jump straight to the vendor page.</p>
             </div>
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {items.map(i => (
-                <Tippy key={i.id} content={TOOLTIP[i.category]} delay={100}>
-                  <div className="relative group rounded-2xl border border-white/10 bg-white/5 px-5 py-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-glow">
-                    <div className="absolute -top-3 left-5 inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/30 to-secondary/30 text-xs font-semibold text-white/80 backdrop-blur-8 border border-white/10">
-                      {i.category}
+              {items.map(item => {
+                const alternativesForCategory = componentAlternatives[item.category] || []
+                const suggestedAlt = alternativesForCategory.find(alt => alt.id !== item.id)
+
+                return (
+                  <div key={item.id} className="relative group rounded-2xl border border-white/10 bg-white/5 px-5 py-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-glow">
+                    <div className="absolute top-3 left-3 inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/30 to-secondary/30 text-xs font-semibold text-white/80 backdrop-blur-8 border border-white/10">
+                      {item.category}
                     </div>
-                    <div className="flex justify-center mb-5 mt-3">
-                      <img
-                        src={THUMB_IMAGES[i.category]}
-                        alt={i.name}
-                        className="w-20 h-20 rounded-xl object-cover border border-white/10"
-                      />
-                    </div>
-                    <div className="text-center space-y-2">
-                      <h4 className="text-lg font-bold text-white">{i.name}</h4>
-                      <div className="text-2xl font-bold text-secondary">${i.price}</div>
-                      {i.vendor && (
+                    <div className="text-center space-y-2 mt-8">
+                      <h4 className="text-lg font-bold text-white">{item.name}</h4>
+                      <div className="text-2xl font-bold text-secondary">{formatCurrency(item.price)}</div>
+                      {item.vendor && (
                         <div className="text-xs text-text-sub space-y-1">
-                          <div className="font-semibold text-white/70">Vendor: {i.vendor}</div>
-                          <div className={i.availability === 'In Stock' ? 'text-emerald-300' : 'text-amber-300'}>
-                            {i.availability}
+                          <div className="font-semibold text-white/70">Vendor: {item.vendor}</div>
+                          <div className={item.availability === 'In Stock' ? 'text-emerald-300' : 'text-amber-300'}>
+                            {item.availability}
                           </div>
                         </div>
                       )}
                       <div className="text-xs text-text-sub bg-white/5 rounded-xl px-3 py-2 border border-white/10">
-                        Alternative: {ALT_SUGGESTIONS[i.category]}
+                        {suggestedAlt
+                          ? <>Alternative: {suggestedAlt.name} - {formatCurrency(suggestedAlt.price)}</>
+                          : 'No alternative available from current vendors'}
                       </div>
                     </div>
                     <div className="flex gap-2 mt-6">
                       <a
-                        href={i.link}
+                        href={item.link || '#'}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-white py-2 text-sm font-semibold shadow-glow hover:bg-primary/90 hover:shadow-lg transition-all duration-200"
@@ -519,7 +572,7 @@ export default function BuildScreen() {
                         Buy Now
                       </a>
                       <button
-                        onClick={() => setSwappingComponent(i.category)}
+                        onClick={() => setSwappingComponent(item.category)}
                         className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 text-white/80 hover:text-white hover:bg-white/15 transition-colors duration-200"
                         title="Swap component"
                       >
@@ -527,8 +580,8 @@ export default function BuildScreen() {
                       </button>
                     </div>
                   </div>
-                </Tippy>
-              ))}
+                )
+              })}
             </div>
           </div>
         </>
@@ -543,24 +596,25 @@ export default function BuildScreen() {
             </h3>
 
             <div className="grid grid-cols-1 gap-4 mb-6">
-              {COMPONENT_ALTERNATIVES[swappingComponent]?.map(component => (
-                <div
-                  key={component.id}
-                  className="flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-primary/40 transition-colors duration-200 cursor-pointer"
-                  onClick={() => handleSwapComponent(swappingComponent, component)}
-                >
-                  <img
-                    src={THUMB_IMAGES[swappingComponent]}
-                    alt={component.name}
-                    className="w-16 h-16 rounded-xl object-cover border border-white/10"
-                  />
-                  <div className="flex-1">
-                    <div className="text-white font-semibold">{component.name}</div>
-                    <div className="text-secondary font-bold">${component.price}</div>
+              {swapOptions.length > 0 ? (
+                swapOptions.map(option => (
+                  <div
+                    key={option.id}
+                    className="flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-primary/40 transition-colors duration-200 cursor-pointer"
+                    onClick={() => handleSwapComponent(swappingComponent, option)}
+                  >
+                    <div className="flex-1">
+                      <div className="text-white font-semibold">{option.name}</div>
+                      <div className="text-secondary font-bold">{formatCurrency(option.price)}</div>
+                    </div>
+                    <div className="text-text-sub text-sm">Click to select</div>
                   </div>
-                  <div className="text-text-sub text-sm">Click to select</div>
+                ))
+              ) : (
+                <div className="text-text-sub text-center py-8 border border-dashed border-white/15 rounded-2xl">
+                  No live alternatives available for this category yet. Try a different part or regenerate a build.
                 </div>
-              ))}
+              )}
             </div>
 
             <div className="flex justify-end">

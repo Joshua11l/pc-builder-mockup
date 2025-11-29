@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FaEnvelope, FaArrowLeft } from 'react-icons/fa'
+import { toast } from 'react-toastify'
+import { resetPassword } from '../services/authService'
 
 export default function PasswordReset() {
   const [email, setEmail] = useState('')
@@ -9,13 +11,24 @@ export default function PasswordReset() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (!email) {
+      toast.error('Please enter your email address')
+      return
+    }
+
     setIsLoading(true)
-    
-    // TODO: Implement actual password reset logic
-    setTimeout(() => {
+
+    const result = await resetPassword(email)
+
+    if (result.success) {
       setIsSubmitted(true)
-      setIsLoading(false)
-    }, 2000)
+      toast.success('Password reset email sent!')
+    } else {
+      toast.error(result.error || 'Failed to send reset email')
+    }
+
+    setIsLoading(false)
   }
 
   if (isSubmitted) {

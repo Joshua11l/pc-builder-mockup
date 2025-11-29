@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
+import { loginUser, registerUser } from '../services/authService'
+import { toast } from 'react-toastify'
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true)
@@ -14,26 +16,69 @@ export default function Auth() {
 
   const handleSubmit = async e => {
     e.preventDefault()
-    if (!email || !password || (!isLogin && (password !== confirm || !name))) {
+
+    if (!email || !password) {
+      toast.error('Please fill in all fields')
       return
     }
-    
+
+    if (!isLogin && password !== confirm) {
+      toast.error('Passwords do not match')
+      return
+    }
+
+    if (!isLogin && !name) {
+      toast.error('Please enter your name')
+      return
+    }
+
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters')
+      return
+    }
+
     setIsLoading(true)
-    
-    // Simulate API call
-    setTimeout(() => {
-      const userData = {
-        id: Date.now().toString(),
-        name: name || email.split('@')[0],
-        email,
-        joinDate: new Date().toISOString()
+
+    try {
+      if (isLogin) {
+        // LOGIN
+        const result = await loginUser(email, password)
+
+        if (result.success) {
+          const userData = {
+            id: result.data.user.id,
+            name: result.data.user.user_metadata?.full_name || email.split('@')[0],
+            email: result.data.user.email,
+            joinDate: result.data.user.created_at
+          }
+
+          login(userData)
+          logActivity('user_login', userData)
+          toast.success('Login successful!')
+          navigate('/')
+        } else {
+          toast.error(result.error || 'Login failed')
+        }
+      } else {
+        // REGISTER
+        const result = await registerUser(email, password, name)
+
+        if (result.success) {
+          toast.success('Registration successful! Please check your email to verify your account.')
+          setIsLogin(true)
+          setName('')
+          setPassword('')
+          setConfirm('')
+        } else {
+          toast.error(result.error || 'Registration failed')
+        }
       }
-      
-      login(userData)
-      logActivity(isLogin ? 'user_login' : 'user_registration', userData)
-      navigate('/')
+    } catch (error) {
+      toast.error('An error occurred. Please try again.')
+      console.error('Auth error:', error)
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   return (

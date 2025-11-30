@@ -1,10 +1,12 @@
 /**
  * Export Service
  * Handles exporting builds to PDF and CSV formats
+ * FR12: Export builds (PDF and CSV formats)
  */
 
 /**
  * Export build to CSV format
+ * FR12: Export builds (CSV format)
  * @param {Object} build - Build object
  * @param {string} buildName - Name of the build
  * @param {number} totalPrice - Total price
@@ -68,6 +70,7 @@ export const exportToCSV = (build, buildName, totalPrice) => {
 
 /**
  * Export build to PDF format (using jsPDF)
+ * FR12: Export builds (PDF format)
  * Note: Requires jsPDF library to be installed
  * @param {Object} build - Build object
  * @param {string} buildName - Name of the build

@@ -4,6 +4,12 @@ import { useUser } from '../context/UserContext'
 import { loginUser, registerUser } from '../services/authService'
 import { toast } from 'react-toastify'
 
+/**
+ * Auth Component
+ * FR17: User registration
+ * FR18: User login
+ * Handles user authentication (login and registration)
+ */
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true)
   const [name, setName] = useState('')
@@ -41,7 +47,7 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        // LOGIN
+        // FR18: User login
         const result = await loginUser(email, password)
 
         if (result.success) {
@@ -60,7 +66,7 @@ export default function Auth() {
           toast.error(result.error || 'Login failed')
         }
       } else {
-        // REGISTER
+        // FR17: User registration
         const result = await registerUser(email, password, name)
 
         if (result.success) {

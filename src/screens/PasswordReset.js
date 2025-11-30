@@ -4,6 +4,11 @@ import { FaEnvelope, FaArrowLeft } from 'react-icons/fa'
 import { toast } from 'react-toastify'
 import { resetPassword } from '../services/authService'
 
+/**
+ * PasswordReset Component
+ * FR19: Password reset
+ * Handles password reset functionality
+ */
 export default function PasswordReset() {
   const [email, setEmail] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)

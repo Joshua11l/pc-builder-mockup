@@ -2,6 +2,19 @@
  * Build Service
  * Handles PC build generation, compatibility checking, and management
  * Advanced algorithm with dynamic budget allocation and optimization
+ *
+ * FR1: Budget input
+ * FR2: Auto-generate compatible build
+ * FR3: Display detailed component specs
+ * FR4: Compatibility validation
+ * FR5: Price range filter
+ * FR6: Brand filter
+ * FR7: Tier selection
+ * FR8: Performance metrics
+ * FR10: Save builds
+ * FR11: Delete builds
+ * FR13: Swap individual components
+ * FR14: View alternative components
  */
 
 import { supabase } from '../lib/supabase'
@@ -91,6 +104,13 @@ const calculateComponentScore = (component, type) => {
 /**
  * Generate a compatible PC build within budget
  * Advanced algorithm with dynamic optimization and backtracking
+ *
+ * FR1: Budget input (accepts budget parameter)
+ * FR2: Auto-generate compatible build (core functionality)
+ * FR4: Compatibility validation (via checkCompatibility)
+ * FR5: Price range filter (via budget allocation)
+ * FR8: Performance metrics (calculated in result)
+ *
  * @param {number} budget - Total budget in USD
  * @returns {Promise} Generated build object
  */
@@ -432,6 +452,7 @@ const generateMinimumViableBuild = async (componentsGrouped, budget) => {
 
 /**
  * Check compatibility of all components in a build
+ * FR4: Compatibility validation
  * @param {Object} build - Build object with all components
  * @returns {Object} Compatibility report
  */
@@ -501,6 +522,7 @@ export const checkCompatibility = (build) => {
 
 /**
  * Save a build to the database
+ * FR10: Save builds
  * @param {string} userId - User ID
  * @param {string} buildName - Name for the build
  * @param {Object} build - Build object
@@ -542,6 +564,7 @@ export const saveBuild = async (userId, buildName, build, totalPrice, budget, co
 
 /**
  * Get all builds for a user
+ * FR9: View saved builds
  * @param {string} userId - User ID
  * @returns {Promise} Array of builds
  */
@@ -564,6 +587,7 @@ export const getUserBuilds = async (userId) => {
 
 /**
  * Delete a build
+ * FR11: Delete builds
  * @param {string} buildId - Build ID
  * @param {string} userId - User ID
  * @returns {Promise} Success or error

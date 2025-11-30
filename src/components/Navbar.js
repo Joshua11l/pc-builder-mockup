@@ -98,6 +98,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop User Info - Only show when authenticated */}
+          {/* FR20: View user profile */}
           {isAuthenticated && (
             <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs xl:text-sm text-white max-w-[150px]">

@@ -1,12 +1,16 @@
 /**
  * Authentication Service
  * Handles user registration, login, logout, and password reset
+ * FR17: User registration
+ * FR18: User login
+ * FR19: Password reset
  */
 
 import { supabase } from '../lib/supabase';
 
 /**
  * Register a new user
+ * FR17: User registration
  * @param {string} email - User email
  * @param {string} password - User password
  * @param {string} name - User full name
@@ -40,6 +44,7 @@ export const registerUser = async (email, password, name) => {
 
 /**
  * Login user
+ * FR18: User login
  * @param {string} email - User email
  * @param {string} password - User password
  * @returns {Promise} Session data or error
@@ -91,6 +96,7 @@ export const logoutUser = async () => {
 
 /**
  * Send password reset email
+ * FR19: Password reset
  * @param {string} email - User email
  * @returns {Promise} Success or error
  */

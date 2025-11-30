@@ -139,7 +139,13 @@ export default function BuildScreen() {
   }, [optimal, items])
 
   /**
-   * Handle PC Build Generation (FR5, FR6)
+   * Handle PC Build Generation
+   * FR1: Budget input
+   * FR2: Auto-generate compatible build
+   * FR5: Price range filter (via budget allocation)
+   * FR6: Brand filter capability
+   * FR7: Tier selection capability
+   * FR8: Performance metrics calculation
    * Generates compatible PC build within given budget with optimized component selection
    */
   async function handleGenerate(budgetInput) {
@@ -272,7 +278,11 @@ export default function BuildScreen() {
   }
 
   /**
-   * Handle Component Swapping (FR7, FR8)
+   * Handle Component Swapping
+   * FR3: Display detailed component specs
+   * FR13: Swap individual components
+   * FR14: View alternative components
+   * FR15: Manual component selection
    * Allows users to swap individual parts within generated build and view specifications
    */
   function handleSwapComponent(category, newComponent) {
@@ -296,7 +306,8 @@ export default function BuildScreen() {
   }
 
   /**
-   * Check Build Compatibility (FR14)
+   * Check Build Compatibility
+   * FR4: Compatibility validation
    * Display compatibility report for each generated build with warnings and bottlenecks
    */
   function checkCompatibility(buildItems) {
@@ -333,7 +344,8 @@ export default function BuildScreen() {
   }
 
   /**
-   * Export build to PDF (FR13)
+   * Export build to PDF
+   * FR12: Export builds (PDF format)
    */
   function handleExportPDF() {
     if (!generatedBuild) {
@@ -364,7 +376,8 @@ export default function BuildScreen() {
   }
 
   /**
-   * Export build to CSV (FR13)
+   * Export build to CSV
+   * FR12: Export builds (CSV format)
    */
   function handleExportCSV() {
     if (!generatedBuild) {
@@ -651,6 +664,7 @@ export default function BuildScreen() {
                     <div className="flex gap-2 mt-6">
                       {!editMode ? (
                         <>
+                          {/* FR16: View vendor links */}
                           <a
                             href={item.link || '#'}
                             target="_blank"

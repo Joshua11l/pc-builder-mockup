@@ -16,11 +16,11 @@ export default function HomeScreen() {
       <section className="relative py-24 px-4">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-stretch">
           <div className="flex flex-col">
-            <span className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full border border-white/10 bg-white/5 text-xs uppercase tracking-[0.4em] text-text-sub">
+            <span className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full border border-white/10 bg-white/5 text-xs uppercase tracking-[0.4em] text-text-sub self-start">
               Next-gen PC Planning
             </span>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
-              Build your dream PC in minutes, with live pricing and smart insights.
+              Build your dream PC in minutes
             </h1>
             <p className="mt-6 text-lg text-text-sub max-w-2xl">
               We analyze real-world vendor data and compatibility rules so you can focus on performance, aesthetics, and budget—all in a single streamlined experience.
@@ -28,7 +28,7 @@ export default function HomeScreen() {
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => nav('/build')}
-                className="inline-flex items-center justify-center gap-3 px-8 py-3 rounded-full text-base font-semibold bg-gradient-to-r from-primary to-secondary text-white shadow-glow hover:shadow-lg transition-transform duration-200 hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center gap-3 px-8 py-3 rounded-full text-base font-semibold bg-primary text-white hover:bg-primary/90 transition-all duration-200"
               >
                 Start Building
               </button>

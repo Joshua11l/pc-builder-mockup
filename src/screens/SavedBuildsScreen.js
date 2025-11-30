@@ -21,7 +21,12 @@ const COMPONENT_ICONS = {
 }
 
 /**
- * SavedBuildsScreen Component (FR9, FR10, FR11, FR12)
+ * SavedBuildsScreen Component
+ * FR9: View saved builds
+ * FR10: Save builds (displays saved builds from database)
+ * FR11: Delete builds
+ * FR12: Export builds (PDF/CSV)
+ * FR15: Manual component selection (via edit mode)
  * Manages and displays user's saved PC builds with grid layout, build management,
  * performance metrics, vendor links, and export functionality
  */
@@ -94,6 +99,7 @@ export default function SavedBuildsScreen() {
 
   /**
    * Handle build edit - navigate to BuildScreen with saved build data
+   * FR15: Manual component selection (edit existing builds)
    */
   function handleEdit(build) {
     // Pass build data via navigation state

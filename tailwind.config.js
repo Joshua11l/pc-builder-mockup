@@ -28,7 +28,7 @@ export default {
         'card-gradient': 'linear-gradient(180deg, rgba(124, 58, 237, 0.12) 0%, rgba(14, 165, 233, 0.08) 100%)'
       },
       boxShadow: {
-        glow: '0 20px 45px -15px rgba(14,165,233,0.45)',
+        glow: '0 20px 45px -15px rgba(124,58,237,0.45)',
         'inner-glow': 'inset 0 0 0 1px rgba(148,163,184,0.08)',
       },
       backdropBlur: {

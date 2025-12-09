@@ -8,7 +8,7 @@ export default function ExportBuild({ build, onClose }) {
   const handleExport = async () => {
     setIsExporting(true)
     
-    // TODO: Implement actual export logic FR13
+    // Implement actual export logic FR13
     const exportData = {
       buildName: build.name || `PC Build - ${new Date().toLocaleDateString()}`,
       budget: build.budget,

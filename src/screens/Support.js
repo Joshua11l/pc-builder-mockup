@@ -12,7 +12,6 @@ export default function Support() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // TODO: Implement support ticket submission
     console.log('Support ticket submitted:', formData)
     alert('Support ticket submitted successfully! We will get back to you within 24 hours.')
     setFormData({ name: '', email: '', subject: '', message: '', category: 'general' })

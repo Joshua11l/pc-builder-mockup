@@ -4,8 +4,8 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 const UserContext = createContext()
 
 /**
- * Custom hook to access user context
- * Throws error if used outside of UserProvider
+ Custom hook to access user context
+ Throws error if used outside of UserProvider
  */
 export const useUser = () => {
   const context = useContext(UserContext)
@@ -16,13 +16,13 @@ export const useUser = () => {
 }
 
 /**
- * UserProvider Component (FR2, FR3, FR18, FR19)
- * Manages user authentication and activity logging throughout the app
- * - User authentication state management
- * - Login/logout functionality with session persistence
- * - Comprehensive activity logging for security and analytics
- * - Local storage integration for offline functionality
- */
+ UserProvider Component (FR2, FR3, FR18, FR19)
+ Manages user authentication and activity logging throughout the app
+ - User authentication state management
+ - Login/logout functionality with session persistence
+ - Comprehensive activity logging for security and analytics
+- Local storage integration for offline functionality
+*/
 export const UserProvider = ({ children }) => {
   // User state management
   const [user, setUser] = useState(null)

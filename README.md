@@ -6,6 +6,9 @@ React + Tailwind SPA that lets you explore the home screen, start a build, view 
 - Node.js 18+ (ships with npm)
 - Modern browser for `http://localhost:3000`
 
+## Live preview
+https://pc-builder-mockup.vercel.app/
+
 ## Run locally
 ```bash
 npm install
